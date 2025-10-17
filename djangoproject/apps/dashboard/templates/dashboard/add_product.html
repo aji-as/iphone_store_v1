@@ -1,0 +1,392 @@
+{% extends 'dashboard/base.html' %}
+{% block tittle %}{{ tittle }}{% endblock tittle %}
+{% load widget_tweaks %}
+
+{% block content %}
+<style>
+    {% comment %} .form-input {
+        @apply w-full px-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 bg-white border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition-all duration-300 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600 dark:focus:ring-primary dark:focus:border-primary;
+    }
+    .form-input:focus {
+        @apply ring-2 ring-primary/50;
+    } {% endcomment %}
+    .form-textarea {
+        @apply w-full px-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 bg-white border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition-all duration-300 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600 dark:focus:ring-primary dark:focus:border-primary;
+    }
+    .form-textarea:focus {
+        @apply ring-2 ring-primary/50;
+    }
+    
+    /* Animation classes */
+    .fade-in {
+        animation: fadeIn 0.5s ease-in forwards;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .slide-up {
+        animation: slideUp 0.5s ease-out forwards;
+    }
+    
+    @keyframes slideUp {
+        from { 
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+    
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+    
+    .delay-300 {
+        animation-delay: 0.3s;
+    }
+    
+    .input-transition {
+        transition: all 0.3s ease;
+    }
+    
+    .input-focus {
+        box-shadow: 0 0 0 4px rgba(54,116,181, 0.4);
+    }
+</style>
+
+<div class="h-full pb-16 overflow-y-auto dark:bg-gray-900 bg-slate-50">
+    <div class="container px-4 sm:px-6 mx-auto grid pb-10">
+
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 my-6 w-full fade-in">
+            <div class="w-full md:w-auto">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100">Tambah Produk </h1>
+            </div>
+            
+            <a href="{% url 'dashboard:productlist' %}" class="inline-flex items-center justify-center rounded-lg gap-2 px-5 py-2.5 bg-white text-slate-700 font-semibold text-sm shadow-md border border-gray-300 transition-all duration-300 ease-in-out hover:bg-slate-100 hover:shadow-lg hover:-translate-y-0.5 focus:ring-2 focus:ring-offset-2 focus:ring-primary w-full md:w-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                <span>Kembali</span>
+            </a>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6 slide-up delay-100">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative dark:bg-red-900/20 dark:border-red-700 dark:text-red-200" role="alert">
+                    <strong class="font-bold">Oops!</strong>
+                    <span class="block sm:inline">Ada masalah dengan data yang Anda kirim.</span>
+                    <ul class="mt-2 list-disc list-inside">
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            {% comment %} form informasi dasar {% endcomment %}
+            <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl">
+                <div class="px-6 py-4 border-b border-slate-300 dark:border-gray-700 bg-slate-200">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Informasi Dasar Produk</h3>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex flex-col md:flex-row md:flex-wrap justify-between gap-x-6 gap-y-5">
+                        {% comment %} form nama product {% endcomment %}
+                        <div>
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                {{ form.name.label }} {% if form.name.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                            <div class="mt-1">
+                                {% render_field form.name class="form-input ring-1 w-full ring-slate-400 outline-none px-3 md:px-6 rounded-md py-1 md:py-2" placeholder="Masukkan nama produk" %}
+                                {% if form.name.errors %}
+                                    <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ form.name.errors|striptags }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if 'sku' in form.fields %}
+                        <div>
+                            <label for="{{ form.sku.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                {{ form.sku.label }}
+                            </label>
+                            <div class="mt-1">
+                                {% render_field form.sku class="form-input" placeholder="Masukkan SKU produk" %}
+                                {% if form.sku.errors %}
+                                    <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ form.sku.errors|striptags }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% comment %} form harga product {% endcomment %}
+                        <div>
+                            <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                {{ form.price.label }} {% if form.price.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                            <div class="mt-1 relative rounded-md shadow-sm  gap-2">
+                                <div class="absolute inset-y-0 left-0 pr-2 flex items-cente pl-3 pointer-events-none mr-3">
+                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm "></span>
+                                </div>
+                                {% render_field form.price class="form-input  ring-1 w-full ring-slate-400 outline-none px-3 md:px-6 rounded-md py-1 md:py-2 " placeholder="Rp 00" %}
+                                {% if form.price.errors %}
+                                    <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ form.price.errors|striptags }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% comment %} form stok product {% endcomment %}
+                        <div>
+                            <label for="{{ form.stock.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                {{ form.stock.label }} {% if form.stock.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+                            <div class="mt-1">
+                                {% render_field form.stock class="form-input ring-1 w-full ring-slate-400 outline-none px-3 md:px-6 rounded-md py-1 md:py-2" placeholder="0" %}
+                                {% if form.stock.errors %}
+                                    <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ form.stock.errors|striptags }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% comment %} form deskripsi product {% endcomment %}
+                    <div class="mt-5">
+                        <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            {{ form.description.label }}
+                        </label>
+                        <div class="mt-1">
+                            {% render_field form.description class="form-textarea resize-y w-full ring-1 ring-slate-400 outline-none px-3 md:px-6 rounded-md py-1 md:py-2 " rows="6" placeholder="Jelaskan spesifikasi, keunggulan, dan fitur utama produk..." %}
+                        </div>
+                        {% if form.description.errors %}
+                            <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                {{ form.description.errors|striptags }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% comment %} form description product end {% endcomment %}
+
+
+            {% comment %} form memory & warna {% endcomment %}
+            <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl slide-up delay-200 w-full ">
+                <div class="px-6 py-4 border-b border-slate-300 dark:border-gray-700 bg-slate-200">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Memory & Warna</h3>
+                </div>
+                
+                <div class="p-6 ">
+                    <div class="flex flex-col md:flex-row justify-between gap-x-20 gap-y-6 ">
+
+                        {% comment %} form ram  {% endcomment %}
+                        <div>
+                            <label for="{{ form.ram.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                {{ form.ram.label }}
+                            </label>
+                            <div class="mt-1">
+                                {% render_field form.ram class="form-input ring-1 ring-slate-400 outline-none px-3 md:px-6 rounded-md py-1 md:py-2 w-full " placeholder="8GB" %}
+                                {% if form.ram.errors %}
+                                    <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ form.ram.errors|striptags }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% comment %} form  warna {% endcomment %}
+                        <div>
+                            <label for="{{ form.memory.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                {{ form.memory.label }}
+                            </label>
+                            <div class="mt-1">
+                                {% render_field form.memory class="form-input ring-1 w-full ring-slate-400 outline-none px-3 md:px-6 rounded-md py-1 md:py-2 " placeholder="128GB" %}
+                                {% if form.memory.errors %}
+                                    <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ form.memory.errors|striptags }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% comment %} warna {% endcomment %}
+                        <div class="mr-0">
+                            <label for="{{ form.color.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                {{ form.color.label }}
+                            </label>
+                            <div class="mt-1">
+                                {% render_field form.color class="form-input ring-1 w-full ring-slate-400 outline-none px-3 md:px-6 rounded-md py-1 md:py-2 " placeholder="Black" %}
+                                {% if form.color.errors %}
+                                    <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        {{ form.color.errors|striptags }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% comment %} form memory & warna end {% endcomment %}
+
+            {% comment %} form image{% endcomment %}
+            <div x-data="{ imageUrl: '{{ form.image.value.url|default:'' }}' }"
+                class="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl">
+
+                <!-- Header -->
+                <div class="px-6 py-4 border-b border-slate-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Gambar Produk</h3>
+                </div>
+
+                <div class="p-6">
+                    <label for="id_image" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ form.image.label }}
+                    </label>
+
+                    <!-- Preview -->
+                    <div class="mt-2 flex justify-center items-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 dark:bg-gray-700/50 dark:border-gray-600 overflow-hidden relative">
+                        <template x-if="!imageUrl">
+                            <div class="text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Preview gambar akan muncul di sini</p>
+                            </div>
+                        </template>
+                        <template x-if="imageUrl">
+                            <img :src="imageUrl" class="h-full w-full object-contain" alt="Image preview">
+                        </template>
+                    </div>
+
+                    <!-- Input file -->
+                    <div class="mt-4">
+                        <input type="file" name="image" id="id_image"
+                            class="text-sm ring-0 rounded-md outline-none text-gray-500
+                                    file:mr-4 file:py-2.5 file:px-4 file:rounded-md
+                                    file:border-0 file:text-sm file:font-semibold
+                                    file:bg-primary file:text-white
+                                    hover:file:bg-primary/90 transition-colors"
+                            x-on:change="imageUrl = URL.createObjectURL($event.target.files[0])">
+
+                        {% if form.image.errors %}
+                            <p class="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                {{ form.image.errors|striptags }}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% comment %} form image end {% endcomment %}
+            
+            <div class="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700 slide-up delay-300">
+                <a href="{% url 'dashboard:productlist' %}" class="inline-flex items-center justify-center rounded-lg gap-2 px-5 py-2.5 bg-white text-slate-700 font-semibold text-sm shadow-md border border-gray-300 transition-all duration-300 ease-in-out hover:bg-slate-100 hover:shadow-lg hover:-translate-y-0.5 focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    Batal
+                </a>
+                <button type="submit" class="inline-flex items-center justify-center rounded-lg gap-2 px-5 py-2.5 bg-primary text-white font-semibold text-sm shadow-md transition-all duration-300 ease-in-out hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Simpan Produk</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add focus effects to form inputs
+        const inputs = document.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.classList.add('input-focus');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.classList.remove('input-focus');
+            });
+        });
+        
+        // Add animation delay for form sections
+        const formSections = document.querySelectorAll('.slide-up');
+        formSections.forEach((section, index) => {
+            section.style.animationDelay = `${index * 0.1}s`;
+        });
+    });
+    
+    // Add input validation highlighting
+    document.addEventListener('input', function(e) {
+        if (e.target.matches('input, textarea, select')) {
+            if (e.target.value) {
+                e.target.classList.remove('border-red-500');
+                e.target.classList.add('border-primary');
+            } else {
+                e.target.classList.remove('border-primary');
+            }
+        }
+    });
+    
+    // Form submission with validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('border-red-500');
+                isValid = false;
+            } else {
+                field.classList.remove('border-red-500');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Mohon lengkapi semua field yang wajib diisi.');
+        }
+    });
+</script>
+{% endblock %}

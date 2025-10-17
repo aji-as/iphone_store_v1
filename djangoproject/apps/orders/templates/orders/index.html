@@ -1,0 +1,232 @@
+{% extends 'orders\base.html' %}
+
+{% load humanize %}
+
+{% block content %}
+
+ <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Product Summary Section -->
+      <div class="lg:w-2/5">
+        <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6">Ringkasan Pesanan</h2>
+          
+          <div class="mb-6">
+            <div class="flex items-center justify-center mb-4">
+              {% if product.image %}
+              <img 
+                src="{{ product.image.url }}" 
+                alt="{{ product.name }}" 
+                class="h-40 w-40 object-contain rounded-lg"
+              />
+              {% else %}
+              <i class="fas fa-mobile-alt text-8xl text-gray-300"></i>
+              {% endif %}
+            </div>
+            
+            <h3 class="text-xl font-bold text-gray-900 text-center">{{ product.name }}</h3>
+            
+            <div class="mt-4 space-y-2">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Harga:</span>
+                <span class="font-semibold">Rp{{ product.price|floatformat:0|intcomma }}</span>
+              </div>
+              
+              {% if product.ram %}
+              <div class="flex justify-between">
+                <span class="text-gray-600">RAM:</span>
+                <span class="font-semibold">{{ product.ram }}</span>
+              </div>
+              {% endif %}
+              
+              {% if product.memory %}
+              <div class="flex justify-between">
+                <span class="text-gray-600">Memori:</span>
+                <span class="font-semibold">{{ product.memory }}</span>
+              </div>
+              {% endif %}
+              
+              {% if product.color %}
+              <div class="flex justify-between">
+                <span class="text-gray-600">Warna:</span>
+                <span class="font-semibold">{{ product.color }}</span>
+              </div>
+              {% endif %}
+              
+              <div class="flex justify-between">
+                <span class="text-gray-600">Stok Tersedia:</span>
+                <span class="font-semibold {% if product.stock <= 5 %}text-yellow-600{% else %}text-green-600{% endif %}">
+                  {{ product.stock }} unit
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border-t border-gray-200 pt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-gray-600">Total Pembayaran:</span>
+              <span id="total-price" class="text-xl font-bold text-green-600">Rp0</span>
+            </div>
+            <p class="text-sm text-gray-500 text-center mt-3">Transfer ke rekening berikut:</p>
+            <div class="bg-gray-100 p-3 rounded-lg mt-2">
+              <p class="text-center text-sm font-medium">BANK BCA</p>
+              <p class="text-center font-bold">1234567890</p>
+              <p class="text-center text-sm">a/n PT. iPhone Store Indonesia</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Order Form Section -->
+      <div class="lg:w-3/5">
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Formulir Pemesanan</h2>
+            <p class="text-gray-600">Silakan isi data diri Anda untuk menyelesaikan pesanan</p>
+          </div>
+          
+          {% if messages %}
+            {% for message in messages %}
+              <div class="mb-4 p-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                <i class="fas fa-info-circle mr-2"></i>{{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          
+          <form method="post" id="order-form">
+            {% csrf_token %}
+            
+            <div class="form-step active" id="step-1">
+              <h3 class="text-xl font-semibold text-gray-800 mb-4">Data Pembeli</h3>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label for="{{ form.buyer_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    Nama Lengkap <span class="text-red-500">*</span>
+                  </label>
+                  {{ form.buyer_name }}
+                  {% if form.buyer_name.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.buyer_name.errors.0 }}</p>
+                  {% endif %}
+                </div>
+                
+                <div>
+                  <label for="{{ form.buyer_phone.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    Nomor Telepon <span class="text-red-500">*</span>
+                  </label>
+                  {{ form.buyer_phone }}
+                  {% if form.buyer_phone.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.buyer_phone.errors.0 }}</p>
+                  {% endif %}
+                </div>
+                
+                <div>
+                  <label for="{{ form.buyer_gender.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    Jenis Kelamin <span class="text-red-500">*</span>
+                  </label>
+                  {{ form.buyer_gender }}
+                  {% if form.buyer_gender.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.buyer_gender.errors.0 }}</p>
+                  {% endif %}
+                </div>
+                
+                <div>
+                  <label for="{{ form.buyer_birth.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    Tanggal Lahir <span class="text-red-500">*</span>
+                  </label>
+                  {{ form.buyer_birth }}
+                  {% if form.buyer_birth.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.buyer_birth.errors.0 }}</p>
+                  {% endif %}
+                </div>
+                
+                <div class="md:col-span-2">
+                  <label for="{{ form.address.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    Alamat Lengkap <span class="text-red-500">*</span>
+                  </label>
+                  {{ form.address }}
+                  {% if form.address.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.address.errors.0 }}</p>
+                  {% endif %}
+                </div>
+                
+                <div class="md:col-span-2">
+                  <label for="{{ form.quantity.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                    Jumlah Pembelian <span class="text-red-500">*</span>
+                  </label>
+                  <div class="flex items-center gap-3">
+                    {{ form.quantity }}
+                    <span class="text-sm text-gray-500">Maks: {{ product.stock }}</span>
+                  </div>
+                  {% if form.quantity.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.quantity.errors.0 }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="flex justify-end">
+                <button type="button" id="next-step" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition">
+                  Lanjut ke Pembayaran
+                </button>
+              </div>
+            </div>
+            
+            <div class="form-step" id="step-2">
+              <h3 class="text-xl font-semibold text-gray-800 mb-4">Konfirmasi Pesanan</h3>
+              
+              <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h4 class="font-semibold text-gray-800 mb-3">Data Pembeli:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                  <div><span class="font-medium">Nama:</span> <span id="preview-name">-</span></div>
+                  <div><span class="font-medium">Telepon:</span> <span id="preview-phone">-</span></div>
+                  <div><span class="font-medium">Jenis Kelamin:</span> <span id="preview-gender">-</span></div>
+                  <div><span class="font-medium">Tanggal Lahir:</span> <span id="preview-birth">-</span></div>
+                  <div class="md:col-span-2"><span class="font-medium">Alamat:</span> <span id="preview-address">-</span></div>
+                  <div class="md:col-span-2"><span class="font-medium">Jumlah:</span> <span id="preview-quantity">-</span> unit</div>
+                </div>
+              </div>
+              
+              <div class="mb-6">
+                <h4 class="font-semibold text-gray-800 mb-3">Detail Produk:</h4>
+                <div class="flex items-center gap-4 p-4 bg-blue-50 rounded-lg">
+                  {% if product.image %}
+                  <img 
+                    src="{{ product.image.url }}" 
+                    alt="{{ product.name }}" 
+                    class="h-16 w-16 object-contain rounded-lg"
+                  />
+                  {% else %}
+                  <i class="fas fa-mobile-alt text-4xl text-gray-300"></i>
+                  {% endif %}
+                  <div>
+                    <h5 class="font-semibold text-gray-800">{{ product.name }}</h5>
+                    <p class="text-gray-600 text-sm">Harga: Rp{{ product.price|floatformat:0|intcomma }} x <span id="preview-quantity-display">-</span> = <span id="preview-total-price" class="font-bold text-green-600">Rp0</span></p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mb-6 p-4 border border-blue-200 rounded-lg">
+                <h4 class="font-semibold text-gray-800 mb-2">Metode Pembayaran:</h4>
+                <p class="text-gray-600 mb-2">Silakan transfer ke rekening berikut:</p>
+                <div class="bg-white p-3 rounded-lg border">
+                  <p class="text-center text-sm font-medium">BANK BCA</p>
+                  <p class="text-center font-bold">1234567890</p>
+                  <p class="text-center text-sm">a/n PT. iPhone Store Indonesia</p>
+                </div>
+              </div>
+              
+              <div class="flex gap-3">
+                <button type="button" id="prev-step" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition">
+                  Kembali
+                </button>
+                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition">
+                  <i class="fas fa-check mr-2"></i>Simpan Pesanan
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+{% endblock content %}

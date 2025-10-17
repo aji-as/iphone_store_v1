@@ -1,0 +1,255 @@
+{% extends 'dashboard/base.html' %}
+{% load humanize %}
+{% load static %}
+{% block tittle %}{{tittle}}{% endblock tittle %}
+
+{% block header_title %}Dashboard{% endblock header_title %}
+
+{% block content %}
+
+
+<script>
+    // JavaScript for animations and interactivity
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to table rows when they appear
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(20px)';
+            row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            
+            setTimeout(() => {
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+
+        // Add hover effect for status badges
+        const statusBadges = document.querySelectorAll('.status-badge');
+        statusBadges.forEach(badge => {
+            badge.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.transition = 'transform 0.2s ease';
+            });
+            badge.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    });
+</script>
+<style>
+    .status-badge {
+        transition: transform 0.2s ease;
+    }
+</style>
+
+<main class="h-full overflow-y-auto mt-0 top-0  left-0 right-0 mr-0 ml-0 max-h-full  bg-slate-200 border-md rounded-md py-5">
+  <div class="container px-4 mx-auto sm:px-6">
+    <!-- Header -->
+    <div class="flex flex-col items-center justify-between mb-6 gap-4 md:flex-row ">
+        <h2 class="text-2xl font-semibold text-gray-700 dark:text-gray-200">Daftar Pesanan</h2>
+        <div class="flex flex-col w-full md:w-auto gap-3 md:flex-row mt-3">
+            <div class="relative w-full md:w-64">
+                <input 
+                    type="text" 
+                    id="searchOrder" 
+                    placeholder="Cari order..." 
+                    class="w-full px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    onkeyup="filterOrders()"
+                >
+                <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <select id="statusFilter" onchange="filterOrders()" class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                <option value="">Semua Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Paid">Paid</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Done">Done</option>
+                <option value="Canceled">Canceled</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Order Summary Cards -->
+    <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-5">
+      <div class="flex items-center p-4 bg-white rounded-xl shadow-md dark:bg-gray-800 transition-all duration-300 hover:shadow-lg">
+        <div class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Total Orders</p>
+          <p class="text-xl font-bold text-gray-700 dark:text-gray-200">{{ orders|length }}</p>
+        </div>
+      </div>
+      <div class="flex items-center p-4 bg-white rounded-xl shadow-md dark:bg-gray-800 transition-all duration-300 hover:shadow-lg">
+        <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
+          <p class="text-xl font-bold text-gray-700 dark:text-gray-200">{{ pending_orders_count }}</p>
+        </div>
+      </div>
+      <div class="flex items-center p-4 bg-white rounded-xl shadow-md dark:bg-gray-800 transition-all duration-300 hover:shadow-lg">
+        <div class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Paid</p>
+          <p class="text-xl font-bold text-gray-700 dark:text-gray-200">{{ paid_orders_count }}</p>
+        </div>
+      </div>
+      <div class="flex items-center p-4 bg-white rounded-xl shadow-md dark:bg-gray-800 transition-all duration-300 hover:shadow-lg">
+        <div class="p-3 mr-4 text-yellow-500 bg-yellow-100 rounded-full dark:text-yellow-100 dark:bg-yellow-500">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Shipped</p>
+          <p class="text-xl font-bold text-gray-700 dark:text-gray-200">{{ shipped_orders_count }}</p>
+        </div>
+      </div>
+      <div class="flex items-center p-4 bg-white rounded-xl shadow-md dark:bg-gray-800 transition-all duration-300 hover:shadow-lg">
+        <div class="p-3 mr-4 text-purple-500 bg-purple-100 rounded-full dark:text-purple-100 dark:bg-purple-500">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Done</p>
+          <p class="text-xl font-bold text-gray-700 dark:text-gray-200">{{ done_orders_count }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="w-full overflow-hidden rounded-lg shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-0.5 ">
+      <div class="w-full overflow-x-auto shadow-2xl">
+        <table id="ordersTable" class="w-full whitespace-no-wrap ">
+          <thead>
+            <tr class="text-xs font-semibold tracking-wide text-left text-gray-800 uppercase border-b border-slate-500 dark:border-gray-700 bg-slate-400 dark:text-gray-400 dark:bg-gray-800">
+              <th class="px-4 py-3">ID Pesanan</th>
+              <th class="px-4 py-3">Produk</th>
+              <th class="px-4 py-3">Nama Pembeli</th>
+              <th class="px-4 py-3">Jumlah</th>
+              <th class="px-4 py-3">Total Harga</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Tanggal</th>
+              <th class="px-4 py-3">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody" class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800 text-gray-800">
+            {% for order in orders %}
+            <tr class="text-gray-800 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+              <td class="px-4 py-3 text-sm">
+                <div class="font-medium text-blue-600 dark:text-blue-400">#{{ order.order_id }}</div>
+              </td>
+              <td class="px-4 py-3">
+                <div class="text-sm font-medium max-w-[120px] truncate sm:max-w-[150px] md:max-w-none" title="{{ order.product.name }}">{{ order.product.name }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">{{ order.product.category|default:"-" }}</div>
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex items-center text-sm">
+                  
+                  <div>
+                    <p class="font-semibold max-w-[100px] truncate sm:max-w-none" title="{{ order.buyer_name }}">{{ order.buyer_name }}</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 max-w-[100px] truncate sm:max-w-none" title="{{ order.buyer_phone }}">{{ order.buyer_phone }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-sm">{{ order.quantity }}</td>
+              <td class="px-4 py-3 text-sm font-semibold">Rp {{ order.total_price|floatformat:0|intcomma|default:"0" }}</td>
+              <td class="px-4 py-3 text-xs">
+                <span class="status-badge px-2 py-1 font-semibold leading-tight rounded-full text-xs whitespace-nowrap
+                  {% if order.status == 'Pending' %}
+                    text-orange-700 bg-orange-100 dark:text-white dark:bg-orange-600
+                  {% elif order.status == 'Paid' %}
+                    text-green-700 bg-green-100 dark:text-green-100 dark:bg-green-700
+                  {% elif order.status == 'Shipped' %}
+                    text-yellow-700 bg-yellow-100 dark:text-yellow-100 dark:bg-yellow-700
+                  {% elif order.status == 'Done' %}
+                    text-blue-700 bg-blue-100 dark:text-blue-100 dark:bg-blue-700
+                  {% elif order.status == 'Canceled' %}
+                    text-red-700 bg-red-100 dark:text-red-100 dark:bg-red-700
+                  {% endif %}">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-sm whitespace-nowrap">{{ order.created_at|date:"d M Y" }}</td>
+              <form action="{% url 'dashboard:sendorder' order.order_id %}" method="post">
+                {% csrf_token %}
+                  <td>
+                    {% if order.status == "Shipped" %}
+                    <button class="flex items-centergap-2 rounded-lg px-4 py-2 bg-red-700 text-white text-sm font-medium shadow-sm hover:bg-red-600 transition-all duration-200 hover:scale-105">
+                      Batal Kirim
+                    </button>
+                    {% elif order.status == "Done" %}
+                    <p class="flex items-centergap-2 rounded-lg px-4 py-2 bg-green-700 w-fit text-white text-sm font-medium shadow-sm hover:bg-green-600 ">
+                        Selesai
+                    <p>
+                    {% else %}
+                     <button class="flex items-centergap-2 rounded-lg px-4 py-2 bg-primary text-white text-sm font-medium shadow-sm hover:bg-blue-600 transition-all duration-200 hover:scale-105">
+                      Kirim Pesanan
+                    </button>
+                    {% endif %}
+                  </td>
+              </form>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                <div class="flex flex-col items-center justify-center">
+                  <svg class="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                  </svg>
+                  <p class="text-lg font-medium">Tidak ada pesanan</p>
+                  <p class="text-sm mt-2">Belum ada pesanan yang tercatat dalam sistem</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- Pagination will be implemented later if needed -->
+    </div>
+
+  </div>
+</main>
+
+<script>
+    // Filter orders based on search and status
+    function filterOrders() {
+        const searchInput = document.getElementById('searchOrder').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+        const table = document.getElementById('ordersTableBody');
+        const rows = table.getElementsByTagName('tr');
+        
+        for (let i = 0; i < rows.length; i++) {
+            const orderId = rows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
+            const customerName = rows[i].getElementsByTagName('td')[2].innerText.toLowerCase();
+            const status = rows[i].getElementsByTagName('td')[5].innerText.toLowerCase();
+            
+            const orderIdMatch = orderId.includes(searchInput);
+            const customerMatch = customerName.includes(searchInput);
+            const statusMatch = statusFilter === '' || status.toLowerCase() === statusFilter.toLowerCase();
+            
+            if ((orderIdMatch || customerMatch) && statusMatch) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    }
+</script>
+
+{% endblock content %}

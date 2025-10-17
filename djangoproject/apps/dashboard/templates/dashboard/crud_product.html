@@ -1,0 +1,146 @@
+{% extends 'dashboard/base.html' %} 
+{% load humanize %}
+{% block tittle %}{{tittle}}{% endblock tittle %}
+{% block content %}
+<main class="h-full pb-16 overflow-y-auto dark:bg-gray-900 bg-slate-50">
+  <div class="container px-4 sm:px-6 mx-auto grid pb-10">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 my-6 w-full">
+      <div class="relative w-full md:max-w-md">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg class="w-5 h-5 text-gray-400" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+        <input
+          id="searchProduct"
+          onkeyup="searchByProduct()" 
+          class="w-full pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 bg-white border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition-all duration-300 dark:bg-gray-800 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600 dark:focus:ring-primary dark:focus:border-primary"
+          type="text"
+          placeholder="Search for products..."
+          aria-label="Search"
+        />
+      </div>
+
+      <a href="{% url 'dashboard:addproduct' %}" class="inline-flex items-center justify-center rounded-lg gap-2 px-5 py-2.5 bg-primary text-white font-semibold text-sm shadow-md transition-all duration-300 ease-in-out hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 focus:ring-2 focus:ring-offset-2 focus:ring-primary w-full md:w-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Tambah Produk</span>
+      </a>
+    </div>
+
+    <!-- tabel daftar product -->
+    <section class="mt-8">
+      <h1 class="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">Daftar Produk</h1>
+
+      <div class="bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden">
+        
+        <div class="hidden md:block overflow-x-auto">
+          <table class="w-full text-left border border-slate-200 rounded-md shadow-lg " id="daftarProduct">
+            <thead>
+              <tr class="bg-slate-200 text-slate-700 dark:bg-gray-700 dark:text-slate-300 border-b border-slate-400 dark:border-gray-600">
+                <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider">NO</th>
+                <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider">Nama Produk</th>
+                <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider">Harga</th>
+                <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider">Memory</th>
+                <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider">Warna</th>
+                <th class="px-6 py-4 font-semibold uppercase text-xs tracking-wider text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-gray-700">
+              {% for item in items %}
+              <tr class="hover:bg-slate-100 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">{{forloop.counter}}</td>
+                <td class="px-6 py-4">
+                  <div class="flex flex-col">
+                    <span class="font-medium text-slate-800 dark:text-slate-100">{{item.name}}</span>
+                    <span class="text-xs mt-1 bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full w-fit dark:bg-emerald-900/50 dark:text-emerald-400">stock: {{item.stock}}</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4 font-medium text-slate-800 dark:text-slate-100">{{ item.price|floatformat:0|intcomma|default:"0" }}</td>
+                <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{item.ram}}/{{item.memory}}</td>
+                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                 {{item.color}}
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex justify-center gap-2">
+                    <a href="{% url 'dashboard:editproduct' item.id_product %}" class="flex items-center gap-2 rounded-lg px-4 py-2 bg-primary text-white text-sm font-medium shadow-sm hover:bg-secondary transition-all duration-200 hover:scale-105">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg>
+                      <span>Edit</span>
+                    </a>
+                    <a href="{% url 'dashboard:deleteproduct' item.id_product  %}" class="flex items-center gap-2 rounded-lg px-4 py-2 bg-rose-700 text-white text-sm font-medium shadow-sm hover:bg-rose-600 transition-all duration-200 hover:scale-105">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      <span>Hapus</span>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- mobile card -->
+
+        <div class="md:hidden grid grid-cols-1 gap-4 bg-slate-100 shadow-none">
+          {% for item in items  %}
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 ring-1 ring-gray-100 ring-opacity-5 dark:ring-white dark:ring-opacity-10">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-bold text-lg text-slate-800 dark:text-slate-100">{{item.name}}</span>
+                <span class="block text-xs mt-1 bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full w-fit dark:bg-emerald-900/50 dark:text-emerald-400">stok : {{item.stock}}</span>
+              </div>
+              <span class="font-semibold text-primary dark:text-primary-400">Rp. {{ item.price|floatformat:0|intcomma|default:"0" }}</span>
+            </div>
+            <div class="border-t my-3 dark:border-gray-700"></div>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p class="text-slate-500 dark:text-slate-400">Warna</p>
+                <p class="font-medium text-slate-700 dark:text-slate-200">{{item.color}}</p>
+              </div>
+              <div>
+                <p class="text-slate-500 dark:text-slate-400">Memory (Ram/Rom)</p>
+                <p class="font-medium text-slate-700 dark:text-slate-200">{{item.ram}}/{{item.memory}}</p>
+              </div>
+            </div>
+            <div class="mt-4 flex gap-2">
+              <a href="{% url 'dashboard:editproduct' item.id_product %}" class="flex-1 flex justify-center items-center gap-2 rounded-lg px-4 py-2 bg-primary text-white text-sm font-medium shadow-sm hover:bg-secondary transition-transform duration-200 hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin = "round" stroke-width="2" d= "M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg>
+                <span>Edit</span>
+              </a>
+              <a href="{% url 'dashboard:deleteproduct' item.id_product  %}" class="flex-1 flex justify-center items-center gap-2 rounded-lg px-4 py-2 bg-rose-700 text-white text-sm font-medium shadow-sm hover:bg-rose-600 transition-transform duration-200 hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                <span>Hapus</span>
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <!-- mobile card end -->
+
+      </div>
+   </section>
+   <!-- tabel daftar product end -->
+
+  </div>
+</main>
+
+<script>
+function searchByProduct() {
+    const searchInput = document.getElementById('searchProduct').value.toLowerCase();
+    const table = document.getElementById('"daftarProduct"');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+        const productName = rows[i].getElementsByTagName('td')[3].innerText.toLowerCase();
+
+        if (productName.includes(searchInput)) {
+            rows[i].style.display = '';
+        } else {
+            rows[i].style.display = 'none';
+        }
+    }
+}
+</script>
+{% endblock content %}

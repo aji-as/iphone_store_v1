@@ -1,0 +1,461 @@
+{% extends 'items\base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+  <!-- Hero Section -->
+<section class="relative bg-white text-black overflow-hidden py-24 px-6 md:px-16">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
+
+    <!-- GAMBAR IPHONE MOBILE-->
+    <div class="flex-1 relative flex justify-center md:justify-end mt-10 md:mt-0 lg:hidden">
+      <div class="relative w-[95%] md:w-[600px] xl:w-[750px] animate-fade-in">
+        <img src=" {% static 'assets\iphone2.jpg' %}" 
+             alt="iPhone 12 Pro"
+             class="w-full object-cover drop-shadow-2xl transition-transform duration-700 ease-out mix-blend-normal relative z-10">
+        <!-- GRADIENT PUTIH DI BAWAH -->
+        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-white via-white/70 to-transparent z-20"></div>
+      </div>
+    </div>
+    
+    <!-- TEKS -->
+    <div class="flex-1 text-center md:text-left space-y-6 animate-fade-slide z-10">
+      <h1 class="text-5xl md:text-6xl font-semibold tracking-tight text-[#04243e]">
+        iPhone 12&nbsp;Pro
+      </h1>
+      <p class="text-lg md:text-xl text-gray-700 max-w-md mx-auto md:mx-0">
+        Kini tersedia. Mulai dari <strong>Rp&nbsp;770.792&nbsp;/&nbsp;bulan*</strong><br>
+        dan nikmati bebas cicilan hingga 2&nbsp;bulan*.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
+        <a href="#beli"
+           class="px-8 py-3 bg-[#04243e] text-white rounded-full font-semibold hover:bg-[#3674B5] transition-all duration-300 shadow-md">
+          Beli Sekarang
+        </a>
+        <a href="#selengkapnya"
+           class="px-8 py-3 border border-black rounded-full font-semibold hover:bg-black hover:text-white transition-all duration-300">
+          Selengkapnya
+        </a>
+      </div>
+    </div>
+
+    <!-- GAMBAR IPHONE -->
+    <div class="flex-1 relative justify-center md:justify-end mt-10 md:mt-0 hidden lg:flex">
+      <div class="relative w-[95%] md:w-[600px] xl:w-[750px] animate-fade-in">
+        <img src=" {% static 'assets\iphone2.jpg' %}" 
+             alt="iPhone 12 Pro"
+             class="w-full object-cover drop-shadow-2xl transition-transform duration-700 ease-out mix-blend-normal relative z-10">
+        <!-- GRADIENT PUTIH DI BAWAH -->
+        <div class="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-white via-white/70 to-transparent z-20"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ANIMASI -->
+  <style>
+    @keyframes fade-slide {
+      0% { opacity: 0; transform: translateY(40px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-in {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .animate-fade-slide {
+      animation: fade-slide 1s ease-out forwards;
+    }
+
+    .animate-fade-in {
+      animation: fade-in 1.3s ease-out forwards;
+    }
+
+    /* Gambar sedikit menyatu */
+    img {
+      filter: brightness(1.05) contrast(1.1);
+    }
+
+    /*Animasi Marquee */
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .animate-marquee {
+      display: flex;
+      width: max-content;
+      animation: marquee 25s linear infinite;
+    }
+  </style>
+</section>
+
+
+
+
+  <!-- Banner Carousel Section -->
+  <div class="relative overflow-hidden bg-white animate-fade-slide">
+      <div class="text-center pt-10 pb-1 bg-secondary ">
+        <div class="flex justify-center items-center gap-1 mb-4 ">
+          <div class="bg-primary px-2 rounded-full shadow-lg">
+            <i class="fas fa-star text-white text-sm lg:text-xl"></i>
+          </div>
+          <h1 class="text-primary text-xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+            Keunggulan <span class="text-primary">Dami Keunggulan</span>
+          </h1>
+        </div>
+        <p class="text-gray-600 lg:text-base text-sm  max-w-xl mx-auto mt-0 lg:mt-2">
+          Didesain dengan kualitas terbaik untuk menghadirkan performa dan keindahan yang sempurna.
+        </p>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-6 pb-16 pt-2">
+        <div class="relative w-full overflow-hidden rounded-3xl shadow-lg ring-1 ring-slate-200">
+          <div id="carousel" class="relative w-full h-[600px]">
+            <!-- Slide 1 -->
+            <div class="absolute inset-0 opacity-100 transition-opacity duration-1000 ease-in-out slide active">
+              <div class="flex flex-col md:flex-row items-center justify-between h-full pt-8 py-4 lg:px-2 md:px-16">
+                <div class="space-y-6 text-center md:px-10 md:text-left">
+                  <h1 class="text-2xl md:text-5xl lg:text-6xl font-bold text-[#04243e]">iPhone 13 Pro</h1>
+                  <p class=" text-sm md:md lg:text-lg text-gray-700">Kecepatan super berkat chip A15 Bionic.</p>
+                  <button class="bg-black text-white px-6 py-3 rounded-full hover:bg-[#3674B5] transition-all">Beli Sekarang</button>
+                </div>
+                <div class="relative flex justify-center w-full md:w-1/2">
+                  <img src="{% static 'assets/iphone.jpg' %}" alt="iPhone 13 Pro"
+                    class="object-contain w-[250px] sm:w-[300px] md:w-[400px] lg:w-[500px] lg:h-[600px] drop-shadow-2xl transition-transform duration-1000 ease-in-out">
+
+                  <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white pointer-events-none"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out slide">
+              <div class="flex flex-col md:flex-row items-center justify-between h-full  pt-8 py-4 lg:px-2 md:px-16">
+                <div class="space-y-6 md:px-10 text-center md:text-left">
+                  <h1 class="text-2xl md:text-5xl lg:text-6xl font-bold text-[#04243e]">iPhone 14 Pro</h1>
+                  <p class="text-sm md:md lg:text-lg text-gray-700">Desain elegan dengan kamera Pro 48MP.</p>
+                  <button class="bg-black text-white px-6 py-3 rounded-full hover:bg-[#3674B5] transition-all">Beli Sekarang</button>
+                </div>
+                <div class="relative flex justify-center w-full md:w-1/2">
+                  <img src="{% static 'assets\iphone3.jpg' %}" alt="iPhone 14 Pro"
+                      class="object-contain w-[380px] md:w-[520px] drop-shadow-2xl transition-transform duration-1000 ease-in-out">
+                  <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white pointer-events-none"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out slide">
+              <div class="flex flex-col md:flex-row items-center justify-between h-full  pt-8 py-4 lg:px-2 md:px-16">
+                <div class="space-y-6 md:px-10 text-center md:text-left">
+                  <h1 class="text-2xl md:text-5xl lg:text-6xl font-bold text-[#04243e]">iPhone 15 Pro</h1>
+                  <p class="text-sm md:md lg:text-lg text-gray-700">Didesain dengan titanium yang kuat dan ringan.</p>
+                  <button class="bg-black text-white px-6 py-3 rounded-full hover:bg-[#3674B5] transition-all">Beli Sekarang</button>
+                </div>
+                <div class="relative flex justify-center w-full top-0 md:w-1/2 h-full ">
+                  <img src="{% static 'assets\iphone17.png' %}" alt="iPhone 15 Pro"
+                      class="object-contain w-[400px] md:w-[540px] drop-shadow-2xl transition-transform duration-1000 ease-in-out">
+                  <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white pointer-events-none"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dots -->
+          <div class="absolute bottom-6 left-0 right-0 flex justify-center space-x-2">
+            <div class="dot w-3 h-3 bg-[#04243e] rounded-full"></div>
+            <div class="dot w-3 h-3 bg-gray-300 rounded-full"></div>
+            <div class="dot w-3 h-3 bg-gray-300 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+  </div>
+  <!-- Banner Carousel Section end -->
+
+
+  <!-- Main Content -->
+  <main class="max-w-full  animate-fade-slide ">
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- Main Content Area -->
+      <div class="w-full  mt-2 ">
+        <!-- Produkkami -->
+        <section id="products" class="py-12 bg-slate-100">
+          <div class="max-w-full mx-auto ">
+            <!-- Header -->
+            <div class="flex flex-col justify-start lg:flex-row lg:justify-between  items-center mb-10 px-10">
+              <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
+                Produk kami
+              </h2>
+              <a href="#" class=" md:inline text-sm text-blue-600 hover:underline">
+                Lihat lainnya &rsaquo;
+              </a>
+            </div>
+
+            <!-- Scroll container -->
+            <div id="productScroll" class="flex overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory scrollbar-hidden animate-fade-slide">
+              {% for product in products %}
+              <div class="snap-start min-w-[180px] sm:min-w-[180px] md:min-w-[230px] bg-slate-100 rounded-2xl  transition-all duration-300 flex-shrink-0">
+
+                <!-- Gambar Produk -->
+                <div class="relative bg-slate-100 rounded-t-2xl flex justify-center items-center overflow-hidden h-52 md:h-60">
+                  {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                        class="w-[170px] md:w-[220px] rounded-2xl object-contain transition-transform duration-700 ease-in-out hover:scale-102">
+                  {% else %}
+                    <i class="fas fa-mobile-alt text-5xl text-gray-400"></i>
+                  {% endif %}
+                </div>
+
+                <!-- Konten -->
+                <div class="p-2 text-center mt-3 ">
+                  <div class="text-gray-500 flex flex-row justify-around px-8 py-1">
+                      <p class="text-[10px] text-primary font-semibold mb-1">{{product.color}}</p>
+                      <p class="text-[8px]">tersisa: {{product.stock}}</p>   
+                    </div>
+                  <h3 class="font-bold text-base text-gray-900 leading-tight">{{ product.name }} <span class="text-gray-500 text-[8px]">{{ product.ram }}/{{ product.memory }}</span></h3>
+                     <p class=" text md text-primary ">Rp. {{product.price}}</p>
+
+                  <!-- Tombol -->
+                  <div class="flex justify-center items-center gap-3 mt-2">
+                    <a href="{% url 'items:detailproduct' product.id_product %}" 
+                      class="bg-[#0071e3] hover:bg-[#005bb5] text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md transition-all">
+                      Selengkapnya
+                    </a>
+                    <form action="{% url 'orders:index' product.id_product %}" method="post">
+                      {% csrf_token %}
+                      {% if product.stock > 0 %}
+                      <form action="{% url 'orders:index' product.id_product %}" method="post">
+                        <button 
+                          class="text-[#0071e3] hover:underline font-medium text-xs">
+                          Beli &rsaquo;
+                        </button>
+                      </form>
+                      {% else %}
+                      <p 
+                        class="text-gray-500 font-medium text-xs">
+                        Beli &rsaquo;
+                     </p>
+                      {% endif %}
+                    </form>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Navigasi Scroll -->
+            <div class="flex justify-center gap-3 mt-5">
+              <button id="scrollLeft" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition">
+                <i class="fas fa-chevron-left text-gray-700 text-sm"></i>
+              </button>
+              <button id="scrollRight" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition">
+                <i class="fas fa-chevron-right text-gray-700 text-sm"></i>
+              </button>
+            </div>
+          </div>
+          <script>
+            const scrollContainer = document.getElementById('productScroll');
+            const btnLeft = document.getElementById('scrollLeft');
+            const btnRight = document.getElementById('scrollRight');
+
+            btnLeft.addEventListener('click', () => {
+              scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+            btnRight.addEventListener('click', () => {
+              scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+
+            // Geser otomatis
+            let autoScroll = setInterval(() => {
+              if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth) {
+                scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+              } else {
+                scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+              }
+           }, 4500);
+          </script>
+       </section>
+      <!-- Main Content end -->
+
+        <!-- Section Kategori -->
+       
+          <div class="relative overflow-hidden py-8 bg-white ">
+            <h2 class="text-center text-2xl font-bold text-primary mb-6">
+            Kategori
+            </h2>
+
+            <!-- Wrapper untuk animasi -->
+            <div class="flex animate-marquee space-x-6">
+              <!-- Baris pertama -->
+              <div class="flex space-x-6">
+                <!-- Item Kategori -->
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-laptop text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Laptop</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-mobile-alt text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Smartphone</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-headphones text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Aksesoris</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-camera text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Kamera</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-clock text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Smartwatch</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-gamepad text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Gaming</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-volume-up text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Audio</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-tablet-alt text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Tablet</p>
+                </div>
+              </div>
+
+              <!-- Duplikat agar loop tanpa putus -->
+              <div class="flex space-x-6">
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-laptop text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Laptop</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-mobile-alt text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Smartphone</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-headphones text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Aksesoris</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-camera text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Kamera</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-clock text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Smartwatch</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-gamepad text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Gaming</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-volume-up text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Audio</p>
+                </div>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 flex flex-col items-center justify-center">
+                  <i class="fas fa-tablet-alt text-2xl text-primary mb-2"></i>
+                  <p class="text-xs sm:text-sm font-semibold text-gray-700">Tablet</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Animasi Marquee -->
+          <style>
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+
+          .animate-marquee {
+            display: flex;
+            width: max-content;
+            animation: marquee 25s linear infinite;
+          }
+          </style>
+
+        <!-- Section Kategori end -->
+      </div>
+    </div>
+
+
+
+
+
+    <script>
+    // Js banner
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    let index = 0;
+
+    function showSlide(i) {
+      slides.forEach((slide, idx) => {
+        slide.style.opacity = idx === i ? '1' : '0';
+        dots[idx].classList.toggle('bg-[#04243e]', idx === i);
+        dots[idx].classList.toggle('bg-gray-300', idx !== i);
+      });
+    }
+
+    setInterval(() => {
+      index = (index + 1) % slides.length;
+      showSlide(index);
+    }, 4000);
+    </script>
+
+    <script>
+      const slides = document.querySelectorAll('.carousel-slide');
+      const indicators = document.querySelectorAll('.indicator');
+      let current = 0;
+
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          slide.style.opacity = i === index ? '1' : '0';
+          slide.style.zIndex = i === index ? '10' : '0';
+          indicators[i].classList.toggle('bg-gray-800', i === index);
+          indicators[i].classList.toggle('bg-gray-300', i !== index);
+        });
+      }
+
+      function nextSlide() {
+        current = (current + 1) % slides.length;
+        showSlide(current);
+      }
+
+      showSlide(current);
+      setInterval(nextSlide, 5000);
+
+
+  // js scrol produk (produk kami)
+   const scrollContainer = document.getElementById('productScroll');
+            const btnLeft = document.getElementById('scrollLeft');
+            const btnRight = document.getElementById('scrollRight');
+
+            btnLeft.addEventListener('click', () => {
+              scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+            btnRight.addEventListener('click', () => {
+              scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+
+            // Geser otomatis
+            let autoScroll = setInterval(() => {
+              if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth) {
+                scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+              } else {
+                scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+              }
+           }, 4500);
+  </script>
+
+  </main>
+
+
+
+
+
+{% endblock content %}

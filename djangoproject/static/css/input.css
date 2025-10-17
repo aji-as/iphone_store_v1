@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme{
+
+  --color-primary: #000000; 
+  --color-secondary:#ffffff ;
+  --font-display: "Inter", sans-serif; 
+
+  
+
+}
+
+@layer utilities {
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hidden {
+    -ms-overflow-style: none; /* IE dan Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}

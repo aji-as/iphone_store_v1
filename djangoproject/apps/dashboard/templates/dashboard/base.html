@@ -1,0 +1,435 @@
+{% load static %}
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block tittle %}{{tittle}}{% endblock tittle %}</title>
+    <link rel="stylesheet" href="{% static 'css\output.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="{% static 'css/output.css' %}" />
+    <script
+      src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+      defer
+    ></script>
+    <script src="{% static 'js/init-alpine.js' %}"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+      defer
+    ></script>
+    <script src="{% static 'js/charts-lines.js' %}" defer></script>
+    <script src="{% static 'js/charts-pie.js' %}" defer></script>
+  </head>
+  <body class="font-roboto">
+    <div
+      class="flex h-screen bg-slate-50 dark:bg-gray-900"
+      :class="{ 'overflow-hidden': isSideMenuOpen }"
+    >
+      <aside
+        class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0 border-r border-slate-200 dark:border-gray-700"
+      >
+        <div class="py-4 text-gray-500 dark:text-gray-400">
+          <a
+            class="ml-6  font-bold text-gray-800 dark:text-gray-200 text-2xl"
+            href="{% url 'dashboard:index' %}"
+          >
+              <i class="fas fa-mobile-alt text-xl"></i>
+              <span class="font-bold text-lg">iPhone Store</span>
+          </a>
+          <ul class="mt-6 space-y-1">
+            <li class="relative px-4 py-1">
+              {% if request.resolver_match.url_name == 'index' %}
+              <span
+                class="absolute inset-y-0 left-0 w-1 bg-primary rounded-tr-md rounded-br-md"
+                aria-hidden="true"
+              ></span>
+              {% endif %}
+              <a
+                class="inline-flex items-center w-full px-2 py-2 text-sm font-semibold transition-all duration-200 ease-in-out transform rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 {% if request.resolver_match.url_name == 'index' %} bg-primary/10 text-primary dark:text-gray-100 {% else %} hover:text-gray-800 dark:hover:text-gray-200 hover:bg-primary/10 hover:translate-x-1 {% endif %}"
+                href="{% url 'dashboard:index' %}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                <span class="ml-4">Daftar Pesanan</span>
+              </a>
+            </li>
+
+            <li class="relative px-4 py-1">
+              {% if request.resolver_match.url_name == 'productlist' %}
+              <span
+                class="absolute inset-y-0 left-0 w-1 bg-primary rounded-tr-md rounded-br-md"
+                aria-hidden="true"
+              ></span>
+              {% endif %}
+              <a
+                class="inline-flex items-center w-full px-2 py-2 text-sm font-semibold transition-all duration-200 ease-in-out transform rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 {% if request.resolver_match.url_name == 'productlist' %} bg-primary/10 text-primary dark:text-gray-100 {% else %} hover:text-gray-800 dark:hover:text-gray-200 hover:bg-primary/10 hover:translate-x-1 {% endif %}"
+                href="{% url 'dashboard:productlist' %}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                  />
+                </svg>
+                <span class="ml-4">Daftar Produk</span>
+              </a>
+            </li>
+
+            <li class="relative px-4 py-1">
+              {% if request.resolver_match.url_name == 'datasales' %}
+              <span
+                class="absolute inset-y-0 left-0 w-1 bg-primary rounded-tr-md rounded-br-md"
+                aria-hidden="true"
+              ></span>
+              {% endif %}
+              <a
+                class="inline-flex items-center w-full px-2 py-2 text-sm font-semibold transition-all duration-200 ease-in-out transform rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 {% if request.resolver_match.url_name == 'datasales' %} bg-primary/10 text-primary dark:text-gray-100 {% else %} hover:text-gray-800 dark:hover:text-gray-200 hover:bg-primary/10 hover:translate-x-1 {% endif %}"
+                href="{% url 'dashboard:datasales' %}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
+                  />
+                  <path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                </svg>
+                <span class="ml-4">Data Penjualan</span>
+              </a>
+            </li>
+          </ul>
+          <div
+            class="px-6 my-6 pt-4 border-t border-slate-200 dark:border-gray-700"
+          >
+            <button
+              class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-all duration-200 ease-in-out bg-primary border border-transparent rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-white dark:focus:ring-offset-gray-800"
+            >
+              Ubah Password
+              <span class="ml-2" aria-hidden="true">+</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {% comment %} mobile sidebar {% endcomment %}
+      <div
+        x-show="isSideMenuOpen"
+        x-transition:enter="transition ease-in-out duration-150"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in-out duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-10 flex items-end bg-black/50 bg-opacity-50 sm:items-center sm:justify-center"
+      ></div>
+
+      <aside
+        class="fixed inset-y-0 z-20 flex-shrink-0 w-64 mt-16 overflow-y-auto bg-white dark:bg-gray-800 md:hidden"
+        x-show="isSideMenuOpen"
+        x-transition:enter="transition ease-in-out duration-150"
+        x-transition:enter-start="opacity-0 transform -translate-x-20"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in-out duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0 transform -translate-x-20"
+        @click.away="closeSideMenu"
+        @keydown.escape="closeSideMenu"
+      >
+        <div class="py-4 text-gray-500 dark:text-gray-400">
+          <a
+            class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"
+            href="{% url 'dashboard:index' %}"
+          >
+            iPhone Store
+          </a>
+          <ul class="mt-6 space-y-1">
+            <li class="relative px-4 py-1">
+              {% if request.resolver_match.url_name == 'index' %}
+              <span
+                class="absolute inset-y-0 left-0 w-1 bg-primary rounded-tr-md rounded-br-md"
+                aria-hidden="true"
+              ></span>
+              {% endif %}
+              <a
+                class="inline-flex items-center w-full px-2 py-2 text-sm font-semibold transition-colors duration-150 rounded-md {% if request.resolver_match.url_name == 'index' %} text-primary dark:text-gray-100 bg-primary/10 {% else %} hover:text-gray-800 dark:hover:text-gray-200 {% endif %}"
+                href="{% url 'dashboard:index' %}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                <span class="ml-4">Daftar Pesanan</span>
+              </a>
+            </li>
+
+            <li class="relative px-4 py-1">
+              {% if request.resolver_match.url_name == 'productlist' %}
+              <span
+                class="absolute inset-y-0 left-0 w-1 bg-primary rounded-tr-md rounded-br-md"
+                aria-hidden="true"
+              ></span>
+              {% endif %}
+              <a
+                class="inline-flex items-center w-full px-2 py-2 text-sm font-semibold transition-colors duration-150 rounded-md {% if request.resolver_match.url_name == 'productlist' %} text-primary dark:text-gray-100 bg-primary/10 {% else %} hover:text-gray-800 dark:hover:text-gray-200 {% endif %}"
+                href="{% url 'dashboard:productlist' %}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                  />
+                </svg>
+                <span class="ml-4">Tambah Produk</span>
+              </a>
+            </li>
+
+            <li class="relative px-4 py-1">
+              {% if request.resolver_match.url_name == 'datasales' %}
+              <span
+                class="absolute inset-y-0 left-0 w-1 bg-primary rounded-tr-md rounded-br-md"
+                aria-hidden="true"
+              ></span>
+              {% endif %}
+              <a
+                class="inline-flex items-center w-full px-2 py-2 text-sm font-semibold transition-colors duration-150 rounded-md {% if request.resolver_match.url_name == 'datasales' %} text-primary dark:text-gray-100 bg-primary/10 {% else %} hover:text-gray-800 dark:hover:text-gray-200 {% endif %}"
+                href="{% url 'dashboard:datasales' %}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
+                  />
+                  <path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                </svg>
+                <span class="ml-4">Data Penjualan</span>
+              </a>
+            </li>
+          </ul>
+          <div
+            class="px-6 my-6 pt-4 border-t border-slate-200 dark:border-gray-700"
+          >
+            <button
+              class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-primary border border-transparent rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-white dark:focus:ring-offset-gray-800"
+            >
+              Ubah Password
+              <span class="ml-2" aria-hidden="true">+</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="flex flex-col flex-1 w-full">
+        <header class="z-10 py-4 bg-white shadow-md dark:bg-gray-800">
+          <div
+            class="container flex items-center justify-between h-full px-6 mx-auto text-primary"
+          >
+            <button
+              class="p-1 -ml-1 rounded-md md:hidden focus:outline-none focus:ring-2 focus:ring-primary"
+              @click="toggleSideMenu"
+              aria-label="Menu"
+            >
+              <svg
+                class="w-6 h-6"
+                aria-hidden="true"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+
+            <div class="flex justify-center flex-1 lg:mr-32">
+              <h1
+                class="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200"
+              >
+                {% block header_title %}Dashboard{% endblock header_title %}
+              </h1>
+            </div>
+
+            <form action="{% url 'logout' %}" method="post" class="inline">
+              {% csrf_token %}
+              <button 
+                type="submit"
+                class="inline-flex items-center gap-2 px-4 py-2 font-semibold text-white transition-all duration-200 ease-in-out transform bg-primary rounded-lg shadow-md text-sm hover:bg-primary/90 hover:-translate-y-px focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-white dark:focus:ring-offset-gray-800"
+              >
+                Logout 
+              </button>
+            </form>
+
+          </div>
+        </header>
+
+        <main class="h-full overflow-y-auto">
+          <div class="container  mx-auto grid">
+
+            {% comment %} {% if messages %}
+              <div class="fixed inset-0 z-50 flex items-start justify-center pt-8 px-4 sm:px-0">
+                <div class="space-y-3 w-full max-w-sm sm:max-w-md md:max-w-lg">
+                  {% for message in messages %}
+                    <div
+                      x-data="{ show: true }"
+                      x-init="setTimeout(() => show = false, 1000)"
+                      x-show="show"
+                      x-transition:leave="transition ease-in duration-500"
+                      x-transition:leave-start="opacity-100 translate-y-0"
+                      x-transition:leave-end="opacity-0 -translate-y-2"
+                      class="flex items-start p-4 rounded-xl shadow-2xl backdrop-blur-md bg-opacity-70 border border-white/20 text-sm font-semibold transition-all mx-auto"
+                      :class="{
+                        'bg-green-500/60 text-white shadow-green-400/30': '{{ message.tags }}' === 'success',
+                        'bg-red-500/60 text-white shadow-red-400/30': '{{ message.tags }}' === 'error',
+                        'bg-yellow-400/60 text-black shadow-yellow-300/40': '{{ message.tags }}' === 'warning',
+                        'bg-blue-500/60 text-white shadow-blue-400/30': '{{ message.tags }}' === 'info'
+                      }"
+                    >
+                      <!-- Icon -->
+                      <div class="mr-3 mt-0.5 opacity-90">
+                        <template x-if="'{{ message.tags }}' === 'success'">
+                          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </template>
+                        <template x-if="'{{ message.tags }}' === 'error'">
+                          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </template>
+                        <template x-if="'{{ message.tags }}' === 'warning'">
+                          <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M4.93 19h14.14c1.17 0 2.1-1.02 1.99-2.19L18.36 4.61a2.002 2.002 0 00-1.99-1.61H7.63c-.94 0-1.74.65-1.99 1.61L2.94 16.81A2.002 2.002 0 004.93 19z" />
+                          </svg>
+                        </template>
+                        <template x-if="'{{ message.tags }}' === 'info'">
+                          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+                          </svg>
+                        </template>
+                      </div>
+
+                      <!-- Message Text -->
+                      <div class="flex-1">
+                        {{ message }}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %} {% endcomment %}
+            
+            {% block content %} {% endblock content %}
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    function data() {
+      function getThemeFromLocalStorage() {
+        // if user already changed the theme, use it
+        if (window.localStorage.getItem("dark")) {
+          return JSON.parse(window.localStorage.getItem("dark"));
+        }
+
+        // else return their system preference
+        return (
+          !!window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+        );
+      }
+
+      function setThemeToLocalStorage(value) {
+        window.localStorage.setItem("dark", value);
+      }
+
+      return {
+        // Sidebar state
+        isSideMenuOpen: false,
+        toggleSideMenu() {
+          this.isSideMenuOpen = !this.isSideMenuOpen;
+        },
+        closeSideMenu() {
+          this.isSideMenuOpen = false;
+        },
+
+        // Dark mode state
+        dark: getThemeFromLocalStorage(),
+        toggleTheme() {
+          this.dark = !this.dark;
+          setThemeToLocalStorage(this.dark);
+        },
+
+        // You can add other global states here
+        // isProfileMenuOpen: false,
+        // toggleProfileMenu() {
+        //   this.isProfileMenuOpen = !this.isProfileMenuOpen
+        // },
+        // closeProfileMenu() {
+        //   this.isProfileMenuOpen = false
+        // },
+      };
+    }
+  </script>
+</html>

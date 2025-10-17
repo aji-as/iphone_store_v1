@@ -1,0 +1,480 @@
+{% extends 'items\\base.html' %} 
+{% load humanize %} 
+{% load static %} 
+{% block content %}
+<div class="px-8">
+  <!-- Breadcrumb -->
+  <nav class="flex mb-6" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+      <li class="inline-flex items-center">
+        <a href="/" class="text-sm text-gray-700 hover:text-primary transition"
+          >Beranda</a
+        >
+      </li>
+      <li>
+        <div class="flex items-center">
+          <span class="text-gray-500 mx-2">/</span>
+          <a
+            href="/items/"
+            class="text-sm text-gray-700 hover:text-primary transition"
+            >Produk</a
+          >
+        </div>
+      </li>
+      <li aria-current="page">
+        <div class="flex items-center">
+          <span class="text-gray-500 mx-2">/</span>
+          <span class="text-sm font-medium text-gray-900"
+            >{{ product.name }}</span
+          >
+        </div>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Product Detail Section -->
+<div class="bg-white rounded-xl shadow-md overflow-hidden">
+  <div class="flex flex-col lg:flex-row p-6 gap-8">
+    
+    <!-- 🖼️ BAGIAN GAMBAR (KIRI) -->
+    <div class="w-full lg:w-1/2 flex flex-col items-center space-y-4">
+      <div class="rounded-lg flex items-center justify-center h-[500px] w-full overflow-hidden bg-gray-50">
+        {% if product.image %}
+        <img
+          id="main-image"
+          src="{{ product.image.url }}"
+          alt="{{ product.name }}"
+          class="h-full w-full object-cover rounded-md"
+        />
+        {% else %}
+        <i class="fas fa-mobile-alt text-8xl text-gray-300"></i>
+        {% endif %}
+      </div>
+
+      <!-- Thumbnail -->
+      <div class="flex space-x-3 overflow-x-auto">
+        {% if product.image %}
+        <div
+          class="thumbnail-item active flex-shrink-0 cursor-pointer border-2 border-green-500 rounded-lg p-1"
+        >
+          <img
+            src="{{ product.image.url }}"
+            alt="Thumbnail"
+            class="w-16 h-16 object-contain rounded"
+          />
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- 📋 BAGIAN DETAIL PRODUK (KANAN) -->
+    <div class="w-full lg:w-1/2 flex flex-col justify-between space-y-6">
+      <!-- Judul & Rating -->
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">{{ product.name }}</h1>
+        <div class="flex items-center mt-2">
+          <span class="text-gray-600 text-sm ml-2">(4.5/5) 120 Ulasan</span>
+        </div>
+      </div>
+
+      <!-- Harga & Stock -->
+      <div class="border-t border-b py-4">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-3xl font-bold text-black">
+            Rp{{ product.price|floatformat:0|intcomma|default:"0" }}
+          </span>
+          {% if product.stock <= 5 and product.stock > 0 %}
+          <span class="text-yellow-600 font-semibold text-sm flex items-center">
+            <i class="fas fa-exclamation-triangle mr-1"></i> Tersisa {{ product.stock }}
+          </span>
+          {% elif product.stock == 0 %}
+          <span class="text-red-600 font-bold text-sm">Habis</span>
+          {% else %}
+          <span class="text-green-600 font-semibold text-sm flex items-center">
+            <i class="fas fa-check-circle mr-1"></i> Tersedia
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Spesifikasi Produk -->
+      <div class="space-y-4">
+        <h3 class="font-semibold text-lg text-gray-800">Spesifikasi Produk</h3>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-3">
+          {% if product.ram %}
+          <div class="flex justify-between border-b pb-1">
+            <span class="text-gray-600">RAM:</span>
+            <span class="font-medium text-gray-900">{{ product.ram }}</span>
+          </div>
+          {% endif %}
+          {% if product.memory %}
+          <div class="flex justify-between border-b pb-1">
+            <span class="text-gray-600">Memori:</span>
+            <span class="font-medium text-gray-900">{{ product.memory }}</span>
+          </div>
+          {% endif %}
+          {% if product.color %}
+          <div class="flex justify-between border-b pb-1">
+            <span class="text-gray-600">Warna:</span>
+            <span class="font-medium text-gray-900">{{ product.color }}</span>
+          </div>
+          {% endif %}
+          <div class="flex justify-between border-b pb-1">
+            <span class="text-gray-600">Terjual:</span>
+            <span class="font-medium text-gray-900">{{ product.sold }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tombol Beli -->
+      <div class="space-y-4 pt-4">
+        {% if product.stock > 0 %}
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center border rounded-full">
+            <button
+              id="decrease-qty"
+              class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-l-full"
+            >
+              -
+            </button>
+            <input
+              type="number"
+              id="quantity"
+              value="1"
+              min="1"
+              max="{{ product.stock }}"
+              class="w-16 text-center border-y-0 border-gray-300 focus:ring-0 focus:border-gray-300"
+            />
+            <button
+              id="increase-qty"
+              class="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-r-full"
+            >
+              +
+            </button>
+          </div>
+          <p class="text-sm text-gray-600">Stok Tersedia: {{ product.stock }} unit</p>
+        </div>
+
+        <form action="{% url 'orders:index' product.id_product %}" method="post">
+          {% csrf_token %}
+          <div class="w-full mt-6">
+            <button
+              class="bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-full font-semibold transition w-full"
+            >
+              Beli Sekarang
+            </button>
+          </div>
+        </form>
+        {% else %}
+        <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-full text-center">
+          <i class="fas fa-exclamation-triangle text-xl mr-2"></i> Maaf, produk ini sedang habis
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Garansi & Ongkir -->
+      <div class="border-t pt-4">
+        <div class="flex items-center text-sm text-gray-600">
+          <i class="fas fa-shipping-fast text-green-500 mr-2"></i> Gratis Ongkir
+        </div>
+        <div class="flex items-center text-sm text-gray-600 mt-2">
+          <i class="fas fa-shield-alt text-blue-500 mr-2"></i> Garansi 1 Tahun
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📄 DESKRIPSI -->
+  <div class="border-t border-gray-200 p-6">
+    <h2 class="text-xl font-bold text-gray-900 mb-4">Deskripsi Produk</h2>
+    <div class="prose max-w-none text-gray-700">
+      {% if product.description %}
+      <p>{{ product.description|linebreaks }}</p>
+      {% else %}
+      <p>Deskripsi produk akan segera ditambahkan.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+
+
+  <!-- Related Products Section -->
+
+   <main class="max-w-full  ">
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- Main Content Area -->
+      <div class="w-full  mt-2 ">
+        <!-- Produk Unggulan -->
+        <section id="products" class="py-12   bg-slate-100">
+          <div class="max-w-full mx-auto ">
+            <!-- Header -->
+            <div class="flex flex-col justify-start lg:flex-row lg:justify-between  items-center mb-10 px-10">
+              <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
+                Produk terkait
+              </h2>
+              <a href="#" class=" md:inline text-sm text-blue-600 hover:underline">
+                Lihat lainnya &rsaquo;
+              </a>
+            </div>
+
+            <!-- Scroll container -->
+            <div id="productScroll" class="flex overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory scrollbar-hidden">
+              {% for product in products %}
+              <div class="snap-start min-w-[180px] sm:min-w-[220px] md:min-w-[230px] bg-slate-100 rounded-2xl  transition-all duration-300 flex-shrink-0">
+
+                <!-- Gambar Produk -->
+                <div class="relative bg-slate-100 rounded-t-2xl flex justify-center items-center overflow-hidden h-52 md:h-60">
+                  {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                        class="w-[180px] md:w-[220px] rounded-2xl object-contain transition-transform duration-700 ease-in-out hover:scale-102">
+                  {% else %}
+                    <i class="fas fa-mobile-alt text-5xl text-gray-400"></i>
+                  {% endif %}
+                </div>
+
+                <!-- Konten -->
+                <div class="p-2 text-center mt-3 ">
+                  <div class="text-gray-500 flex flex-row justify-around px-8 py-1">
+                      <p class="text-[10px] text-primary font-semibold mb-1">{{product.color}}</p>
+                      <p class="text-[8px]">tersisa: {{product.stock}}</p>   
+                    </div>
+                  <h3 class="font-bold text-base text-gray-900 leading-tight">{{ product.name }} <span class="text-gray-500 text-[8px]">{{ product.ram }}/{{ product.memory }}</span></h3>
+                     <p class=" text md text-primary ">Rp. {{product.price}}</p>
+
+                  <!-- Tombol -->
+                  <div class="flex justify-center items-center gap-3 mt-2">
+                    <a href="{% url 'items:detailproduct' product.id_product %}" 
+                      class="bg-[#0071e3] hover:bg-[#005bb5] text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md transition-all">
+                      Selengkapnya
+                    </a>
+                    <form action="{% url 'orders:index' product.id_product %}" method="post">
+                      {% csrf_token %}
+                      {% if product.stock > 0 %}
+                      <button 
+                        class="text-[#0071e3] hover:underline font-medium text-xs">
+                        Beli &rsaquo;
+                      </button>
+                      {% else %}
+                      <p 
+                        class="text-gray-500 font-medium text-xs">
+                        Beli &rsaquo;
+                     </p>
+                      {% endif %}
+                    </form>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Navigasi Scroll -->
+            <div class="flex justify-center gap-3 mt-5">
+              <button id="scrollLeft" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition">
+                <i class="fas fa-chevron-left text-gray-700 text-sm"></i>
+              </button>
+              <button id="scrollRight" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition">
+                <i class="fas fa-chevron-right text-gray-700 text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Script animasi scroll -->
+          <script>
+            const scrollContainer = document.getElementById('productScroll');
+            const btnLeft = document.getElementById('scrollLeft');
+            const btnRight = document.getElementById('scrollRight');
+
+            btnLeft.addEventListener('click', () => {
+              scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+            btnRight.addEventListener('click', () => {
+              scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+
+            // Geser otomatis
+            let autoScroll = setInterval(() => {
+              if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth) {
+                scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+              } else {
+                scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+              }
+            }, 4500);
+          </script>
+        </section>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Product image gallery and interactive elements functionality
+    document.addEventListener("DOMContentLoaded", function () {
+      const mainImage = document.getElementById("main-image");
+      const thumbnails = document.querySelectorAll(".thumbnail-item");
+
+      // Thumbnail click event
+      thumbnails.forEach((thumb) => {
+        thumb.addEventListener("click", function () {
+          // Remove active class from all thumbnails
+          thumbnails.forEach((t) => t.classList.remove("active"));
+          // Add active class to clicked thumbnail
+          this.classList.add("active");
+          // Change main image source to thumbnail source
+          const imgSrc = this.querySelector("img").src;
+          mainImage.src = imgSrc;
+        });
+      });
+
+      // Quantity controls
+      const quantityInput = document.getElementById("quantity");
+      const decreaseBtn = document.getElementById("decrease-qty");
+      const increaseBtn = document.getElementById("increase-qty");
+
+      const maxStock = parseInt(quantityInput.max);
+
+      decreaseBtn.addEventListener("click", function () {
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+          quantityInput.value = currentValue - 1;
+        }
+      });
+
+      increaseBtn.addEventListener("click", function () {
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue < maxStock) {
+          quantityInput.value = currentValue + 1;
+        }
+      });
+
+      // Add to cart functionality
+      const addToCartBtn = document.getElementById("add-to-cart");
+      addToCartBtn.addEventListener("click", function () {
+        const quantity = parseInt(quantityInput.value);
+        // Show a notification that the product was added to cart
+        showNotification(
+          `Produk berhasil ditambahkan ke keranjang sebanyak ${quantity} unit`,
+          "success"
+        );
+      });
+
+      // Add animation to product info
+      const productInfo = document.querySelector(".space-y-6");
+      if (productInfo) {
+        productInfo.classList.add("animate-fadeIn");
+      }
+
+      // Add image zoom functionality on hover
+      const imageContainer = document.querySelector(".product-image-container");
+      if (imageContainer) {
+        imageContainer.addEventListener("mouseenter", function () {
+          mainImage.style.transform = "scale(1.05)";
+          mainImage.style.transition = "transform 0.3s ease";
+        });
+
+        imageContainer.addEventListener("mouseleave", function () {
+          mainImage.style.transform = "scale(1)";
+        });
+      }
+
+      // Add smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Add wishlist functionality
+      const wishlistBtn = document.createElement("button");
+      wishlistBtn.innerHTML =
+        '<i class="far fa-heart mr-2"></i> Tambah ke Wishlist';
+      wishlistBtn.className =
+        "bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-lg font-semibold transition flex items-center justify-center mt-2 w-full";
+      wishlistBtn.addEventListener("click", function () {
+        this.classList.toggle("bg-red-100");
+        const heartIcon = this.querySelector("i");
+        if (this.classList.contains("bg-red-100")) {
+          heartIcon.className = "fas fa-heart mr-2 text-red-500";
+          showNotification("Produk ditambahkan ke wishlist", "success");
+        } else {
+          heartIcon.className = "far fa-heart mr-2";
+          showNotification("Produk dihapus dari wishlist", "info");
+        }
+      });
+
+      // Add wishlist button to the purchase section
+      const purchaseSection = document.querySelector(".space-y-4");
+      if (purchaseSection && document.querySelector("#add-to-cart")) {
+        purchaseSection.appendChild(wishlistBtn);
+      }
+
+      // Add notification function
+      function showNotification(message, type) {
+        // Remove any existing notifications
+        const existingNotification = document.querySelector(
+          ".notification-toast"
+        );
+        if (existingNotification) {
+          existingNotification.remove();
+        }
+
+        const notification = document.createElement("div");
+        notification.className = `notification-toast fixed top-4 right-4 px-6 py-4 rounded-lg shadow-lg text-white z-50 animate-fadeIn ${
+          type === "success" ? "bg-green-500" : "bg-blue-500"
+        }`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 3000);
+      }
+    });
+  </script>
+
+  <style>
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .thumbnail-item.active {
+      border-color: #2563eb; /* primary color */
+    }
+
+    .product-card {
+      transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+ 
+</div>
+ {% endblock content %}
