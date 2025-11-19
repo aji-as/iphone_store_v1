@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, cekpesanan
+from .views import index, cekpesanan ,order_sukses
 
 
 app_name = 'orders'

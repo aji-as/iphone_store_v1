@@ -4,6 +4,10 @@ from apps.items .forms import  ProductForm
 from apps.orders.models import Order
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Count
+from.ai import predictions
+from . pdf_data_generate import export_full_sales_report_excel
+
 
 
 
@@ -30,9 +34,90 @@ def index(request):
 
 @login_required
 def datasales(request):
+    total_products = Product.objects.count()
+    total_sales = Order.objects.aggregate(Sum('total_price'))['total_price__sum'] or 0
+    total_sold = Order.objects.aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+    # 2️⃣ Penjualan per produk
+    product_sales = (
+        Order.objects.values('product__name')
+        .annotate(total_sold=Sum('quantity'))
+        .order_by('-total_sold')[:10]
+    )
+
+    # 3️⃣ Kota dengan penjualan iPhone terbanyak
+    iphone_sales_by_city = (
+        Order.objects.filter(product__name__icontains='iphone')
+        .values('city')
+        .annotate(total=Sum('quantity'))
+        .order_by('-total')
+    )
+
+    # 4️⃣ Gender dan umur pembeli iPhone
+    gender_sales = (
+        Order.objects.filter(product__name__icontains='iphone')
+        .values('buyer_gender')
+        .annotate(total=Sum('quantity'))
+    )
+
+    age_sales = (
+        Order.objects.filter(product__name__icontains='iphone')
+        .values('buyer_age')
+        .annotate(total=Sum('quantity'))
+        .order_by('buyer_age')
+    )
+    
+    
+    #refresh predictions
+    if request.method == 'POST':
+        prediksi = predictions(Order)
+
+        # pastikan hasilnya berupa dict
+        import json
+        if isinstance(prediksi, str):
+            try:
+                prediksi = json.loads(prediksi)
+                print(prediksi)
+            except json.JSONDecodeError:
+                prediksi = {
+                    "prediksi_tren": "Tidak dapat membaca hasil prediksi.",
+                    "produk_populer": [],
+                    "saran_admin": "Periksa kembali format JSON dari Gemini."
+                }
+
+        prediksi_tren = prediksi.get('prediksi_tren')
+        produk_populer = prediksi.get('produk_populer')
+        saran_admin = prediksi.get('saran_admin')
+    else:
+        prediksi_tren = None
+        produk_populer = None
+        saran_admin = None
+
+    
+
     context = {
-        'tittle':'data penjualan'
+        "prediksi_tren":prediksi_tren,
+        "produk_populer":produk_populer,
+        "saran_admin" :saran_admin,
+        "title": "Dashboard Penjualan",
+        "total_sold": total_sold,
+        "total_products": total_products,
+        "total_sales": total_sales,
+
+        # Data untuk grafik Chart.js
+        "product_labels": [x['product__name'] for x in product_sales],
+        "product_values": [x['total_sold'] for x in product_sales],
+        
+        "city_labels": [x['city'] for x in iphone_sales_by_city],
+        "city_values": [x['total'] for x in iphone_sales_by_city],
+
+        "gender_labels": [x['buyer_gender'] for x in gender_sales],
+        "gender_values": [x['total'] for x in gender_sales],
+
+        "age_labels": [x['buyer_age'] for x in age_sales],
+        "age_values": [x['total'] for x in age_sales],
     }
+
     return render(request, 'dashboard/data_sales.html',context)
 
 @login_required
@@ -99,3 +184,10 @@ def sendorder(request,order_id):
         return redirect('dashboard:index')
     else:
         return redirect('dashboard:index')
+    
+    
+@login_required
+def export_to_pdf(request):
+    response =export_full_sales_report_excel(request)
+    return response
+    

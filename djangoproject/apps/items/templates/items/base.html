@@ -18,6 +18,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <style>
+     html {
+    scroll-behavior: smooth;
+    }
     .product-card {
       transition: all 0.3s ease;
       transform: translateY(0);
@@ -242,16 +245,17 @@
       </div>
 
       <div class="flex-grow overflow-y-auto -mr-4 pr-4 pt-2 pl-2">
-          <form action="" method="post">
+          <form action="{% url "items:listproduct" %}" method="post">
+           {% csrf_token %}
             <div class="relative mb-6">
                   <input 
                       type="text" 
                       name="search" 
                       placeholder="Cari produk..." 
                       class="w-full py-2 pl-4 pr-12 text-gray-800 bg-gray-50 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow"
-                      value="{{ search_query|default:'' }}"
+                      value="{{ search_query |default:'' }}"
                   >
-                  <button type="submit" class="absolute right-0 top-0 h-full px-4 text-secondarybg-secondary rounded-r-lg hover:bg-[#2a5a8a] transition-colors ">
+                  <button type="submit" class="absolute right-0 top-0 h-full px-4 text-secondary rounded-r-lg hover:bg-secondary hover:text-primary transition-colors ">
                       <i class="fas fa-search"></i>
                   </button>
               </div>
@@ -260,7 +264,7 @@
               <a href="/" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all font-medium">
                   <i class="fas fa-home w-5 text-center mr-3"></i>Beranda
               </a>
-              <a href="/items/" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all font-medium">
+              <a href="{% url 'items:listproduct' %}" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all font-medium">
                   <i class="fas fa-box-open w-5 text-center mr-3"></i>Produk
               </a>
 
@@ -293,7 +297,9 @@
         </div>
 
         <!-- Search Form (Desktop) -->
-        <form method="GET" action="/items/" class="hidden md:flex flex-1 max-w-2xl">
+
+        <form method="post" action="{% url "items:listproduct" %}" class="hidden md:flex flex-1 max-w-2xl">
+          {% csrf_token %}
           <div class="relative w-full">
             <input 
               type="text" 
@@ -312,7 +318,7 @@
         <div class="hidden md:flex items-center space-x-6">
           <a href="/" class="hover:text-gray-300 transition font-medium">Beranda</a>
 
-          <a href="/items/" class="hover:text-gray-300 transition font-medium">Produk</a>
+          <a href="{% url 'items:listproduct' %}" class="hover:text-gray-300 transition font-medium">Produk</a>
           <a href="{% url 'orders:cekpesanan' %}" class="bg-secondary hover:bg-primary text-primary ring-1 ring-primary hover:text-secondary rounded-full px-4 py-2  transition flex items-center text-sm font-medium">
             <i class="fas fa-search mr-2"></i>Cek Pesanan
           </a>

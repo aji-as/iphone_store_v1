@@ -1,6 +1,7 @@
-from django.db import models
+from django.db import models, transaction
 import datetime
 from apps.items.models import Product
+
 
 
 def generate_order_id():
@@ -17,9 +18,6 @@ def generate_order_id():
     return f'ORD{today_str}-{new_number:03d}'
 
 
-# ========================
-# ORDER MODEL
-# ========================
 class Order(models.Model):
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
@@ -30,34 +28,44 @@ class Order(models.Model):
     ]
 
     order_id = models.CharField(max_length=20, unique=True, default=generate_order_id)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="orders")
-    buyer_name = models.CharField(max_length=100, default="Unknown")  # default buyer_name
-    buyer_phone = models.CharField(max_length=20, default="-")        # default kosong
+    product = models.ForeignKey('items.Product', on_delete=models.CASCADE, related_name="orders")
+
+    # Informasi pembeli
+    buyer_name = models.CharField(max_length=100, default="Unknown")
+    buyer_phone = models.CharField(max_length=20, default="-")
     buyer_gender = models.CharField(
         max_length=10,
-        choices=[('Male', 'Male'), ('Female', 'Female'), ('Other', 'Other')],
-        default='Other'   # kasih default
+        choices=[('Male', 'Male'), ('Female', 'Female')],
+        default='Other'
     )
-    buyer_birth = models.DateField(default=datetime.date.today)  # default hari ini (biar nggak error)
-    address = models.TextField(default="-")                      # alamat kosong
-    quantity = models.PositiveIntegerField(default=1)            # minimal 1
+    buyer_age = models.PositiveIntegerField(default=0)
+
+    # 🟢 Tambahan untuk wilayah
+    city = models.CharField(max_length=100, default="-")   # Kota/Kecamatan
+    region = models.CharField(max_length=100, default="-") # Kabupaten/Daerah
+    address = models.TextField(default="-")
+
+    quantity = models.PositiveIntegerField(default=1)
     total_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
     proof_image = models.ImageField(upload_to='bukti_transfer/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @transaction.atomic
     def save(self, *args, **kwargs):
-        # hitung total harga otomatis
+        """Kurangi stok saat order dibuat."""
+        is_new = self._state.adding
         self.total_price = self.product.price * self.quantity
 
-        # jika order sudah dibayar/done → update stok & sold
-        if self.status in ['Paid', 'Done']:
-            if self.product.stock >= self.quantity:
-                self.product.stock -= self.quantity
-                self.product.sold += self.quantity
-                self.product.save()
-            else:
-                raise ValueError("Stok produk tidak cukup!")
+        if is_new:
+            # Order baru => kurangi stok produk
+            self.product.reduce_stock(self.quantity)
+        else:
+            # Jika order diedit => sesuaikan stok
+            old_order = Order.objects.get(pk=self.pk)
+            diff_qty = self.quantity - old_order.quantity
+            if diff_qty != 0:
+                self.product.reduce_stock(diff_qty)
 
         super().save(*args, **kwargs)
 

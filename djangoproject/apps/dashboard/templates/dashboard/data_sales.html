@@ -1,208 +1,655 @@
-{% extends 'dashboard/base.html' %} 
-
-{% block tittle %}{{tittle}}{% endblock tittle %}
-
-{% block content %}
-<main class="h-full pb-16 overflow-y-auto">
-  <div class="container px-6 mx-auto grid">
-    <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-     Data Penjualan
-    </h2>
-    <!-- Responsive cards -->
-    <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
-      <!-- Card -->
+{% extends 'dashboard/base.html' %} {% load humanize %} {% load static %}
+{%block content %}
+<div
+  class="p-4 sm:p-6 md:p-8 bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen"
+>
+  <div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <header class="mb-6 sm:mb-8">
       <div
-        class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <div>
+          <h1
+            class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center"
+          >
+            <i
+              class="fas fa-chart-line mr-3 text-indigo-600"
+              aria-hidden="true"
+            ></i>
+            Data Penjualan
+          </h1>
+          <p class="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">
+            Analisis penjualan produk anda
+          </p>
+        </div>
+        <div class="flex justify-end">
+          <a href="{% url "dashboard:export_to_pdf" %}">
+             <button
+            class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition flex items-center"
+            aria-label="Ekspor laporan penjualan"
+          >
+            <i class="fas fa-download mr-2" aria-hidden="true"></i>
+            <span>Ekspor Laporan</span> 
+          </button>
+          </a>
+         
+        </div>
+      </div>
+    </header>
+
+    <!-- Statistik Utama -->
+    <section
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8"
+    >
+      <div
+        class="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md"
+        role="region"
+        aria-labelledby="total-orders"
+      >
+        <div class="flex items-center">
+          <div
+            class="p-3 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600"
+          >
+            <i
+              class="fas fa-shopping-cart text-primary text-xl"
+              aria-hidden="true"
+            ></i>
+          </div>
+          <div class="ml-4">
+            <h2
+              id="total-orders"
+              class="text-gray-500 text-xs sm:text-sm font-medium"
+            >
+              Total Penjualan Produk
+            </h2>
+            <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-1">
+              {{ total_sold }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md"
+        role="region"
+        aria-labelledby="total-products"
+      >
+        <div class="flex items-center">
+          <div
+            class="p-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600"
+          >
+            <i class="fas fa-box text-primary text-xl" aria-hidden="true"></i>
+          </div>
+          <div class="ml-4">
+            <h2
+              id="total-products"
+              class="text-gray-500 text-xs sm:text-sm font-medium"
+            >
+              Total Produk
+            </h2>
+            <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-1">
+              {{ total_products }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md"
+        role="region"
+        aria-labelledby="total-pendapatan"
+      >
+        <div class="flex items-center">
+          <div
+            class="p-3 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600"
+          >
+            <i
+              class="fas fa-dollar-sign text-primary text-xl"
+              aria-hidden="true"
+            ></i>
+          </div>
+          <div class="ml-4">
+            <h2
+              id="total-pendapatan"
+              class="text-gray-500 text-xs sm:text-sm font-medium"
+            >
+              Total Pendapatan
+            </h2>
+            <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-1">
+              Rp{{ total_sales|floatformat:0|intcomma|default:"0" }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md"
+        role="region"
+        aria-labelledby="customer-aktif"
+      >
+        <div class="flex items-center">
+          <div
+            class="p-3 rounded-lg bg-gradient-to-r from-violet-500 to-violet-600"
+          >
+            <i class="fas fa-box-open text-primary text-xl" aria-hidden="true"></i>
+          </div>
+          <div class="ml-4">
+            <h2
+              id="customer-aktif"
+              class="text-gray-500 text-xs sm:text-sm font-medium"
+            >
+              Total Product dengan stock 0
+            </h2>
+            <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-1">
+              {{ total_customers|default:0 }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grafik Utama -->
+    <section
+      class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8"
+    >
+      <!-- Grafik Penjualan Produk -->
+      <div
+        class="bg-white rounded-xl p-4 sm:p-6 shadow-lg"
+        role="region"
+        aria-labelledby="penjualan-produk"
       >
         <div
-          class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500"
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6"
         >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"
-            ></path>
-          </svg>
+          <div class="mb-3 sm:mb-0">
+            <h2
+              id="penjualan-produk"
+              class="text-lg sm:text-xl font-semibold text-gray-800 flex items-center"
+            >
+              <i
+                class="fas fa-chart-bar mr-2 text-indigo-600"
+                aria-hidden="true"
+              ></i>
+              Penjualan per Produk
+            </h2>
+          </div>
+          <div
+            class="flex space-x-2"
+            role="group"
+            aria-label="Filter waktu penjualan"
+          >
+            <button
+              class="px-3 py-1 text-xs sm:text-sm bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200"
+            >
+              7H
+            </button>
+            <button
+              class="px-3 py-1 text-xs sm:text-sm bg-indigo-100 text-indigo-700 rounded-lg"
+            >
+              30H
+            </button>
+            <button
+              class="px-3 py-1 text-xs sm:text-sm bg-gray-100 rounded-lg text-gray-700 hover:bg-gray-200"
+            >
+              Tahun
+            </button>
+          </div>
         </div>
-        <div>
-          <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-            Total clients
-          </p>
-          <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-            6389
+        <div class="overflow-x-auto">
+          <canvas id="bars" height="240" class="w-full"></canvas>
+        </div>
+      </div>
+
+      <!-- Grafik Kota Penjualan iPhone -->
+      <div
+        class="bg-white rounded-xl p-4 sm:p-6 shadow-lg"
+        role="region"
+        aria-labelledby="distribusi-kota"
+      >
+        <h2
+          id="distribusi-kota"
+          class="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6 flex items-center"
+        >
+          <i
+            class="fas fa-map-marked-alt mr-2 text-indigo-600"
+            aria-hidden="true"
+          ></i>
+          Distribusi Penjualan per Kota
+        </h2>
+        <div class="overflow-x-auto">
+          <canvas id="pie" height="240" class="w-full"></canvas>
+        </div>
+        <div class="mt-4 text-center">
+          <p class="text-gray-600 text-sm">
+            Grafik di atas menunjukkan distribusi penjualan berdasarkan lokasi
+            geografis
           </p>
         </div>
       </div>
-      <!-- Card -->
-      <div
-        class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-      >
-        <div
-          class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500"
-        >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-        </div>
-        <div>
-          <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-            Account balance
-          </p>
-          <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-            $ 46,760.89
-          </p>
-        </div>
-      </div>
-      <!-- Card -->
-      <div
-        class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-      >
-        <div
-          class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500"
-        >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
-            ></path>
-          </svg>
-        </div>
-        <div>
-          <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-            New sales
-          </p>
-          <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-            376
-          </p>
-        </div>
-      </div>
-      <!-- Card -->
-      <div
-        class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-      >
-        <div
-          class="p-3 mr-4 text-teal-500 bg-teal-100 rounded-full dark:text-teal-100 dark:bg-teal-500"
-        >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-        </div>
-        <div>
-          <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
-            Pending contacts
-          </p>
-          <p class="text-lg font-semibold text-gray-700 dark:text-gray-200">
-            35
-          </p>
-        </div>
-      </div>
-    </div>
+    </section>
 
-  </div>
+    <!-- Grafik Lanjutan -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      <!-- Grafik Umur Pembeli -->
+      <div
+        class="bg-white rounded-xl p-4 sm:p-6 shadow-lg"
+        role="region"
+        aria-labelledby="segmentasi-usia"
+      >
+        <h2
+          id="segmentasi-usia"
+          class="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6 flex items-center"
+        >
+          <i
+            class="fas fa-user-friends mr-2 text-indigo-600"
+            aria-hidden="true"
+          ></i>
+          Segmentasi Usia Pembeli
+        </h2>
+        <div class="overflow-x-auto">
+          <canvas id="line" height="240" class="w-full"></canvas>
+        </div>
+      </div>
 
-  <div class="container px-6 mx-auto grid">
-    <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-      Charts
-    </h2>
+      <!-- Grafik Gender Pembeli -->
+      <div
+        class="bg-white rounded-xl p-4 sm:p-6 shadow-lg"
+        role="region"
+        aria-labelledby="distribusi-gender"
+      >
+        <h2
+          id="distribusi-gender"
+          class="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6 flex items-center"
+        >
+          <i
+            class="fas fa-venus-mars mr-2 text-indigo-600"
+            aria-hidden="true"
+          ></i>
+          Distribusi Gender Pembeli
+        </h2>
+        <div class="overflow-x-auto">
+          <canvas id="genderChart" height="240" class="w-full"></canvas>
+        </div>
+      </div>
+    </section>
+
+
    
-  
+    <!-- Section Prediksi -->
+    <section class="pt-10  ">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+          Prediksi Penjualan
+        </h1>
+        <form method="post">
+          {% csrf_token %}
+          <button
+            type="submit"
+            class="inline-flex items-center gap-1.5 px-4 py-2 font-semibold text-white transition-all duration-200 ease-in-out transform bg-primary rounded-full shadow-md text-sm hover:bg-primary/80 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-white dark:focus:ring-offset-gray-900"
+          >
+            <i class="fas fa-sync-alt fa-fw"></i>
+            <span>Refresh</span>
+          </button>
+        </form>
+      </div>
 
-    <p class="mb-8 text-gray-600 dark:text-gray-400">
-      Charts are provided by
-      <a
-        class="text-purple-600 dark:text-purple-400 hover:underline"
-        href="https://www.chartjs.org/"
+      <div
+        class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md p-6 transition-all duration-300 hover:shadow-lg"
       >
-        Chart.js
-      </a>
-    </p>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+          Berdasarkan data penjualan terbaru, hasil prediksi sementara adalah:
+        </p>
 
-    <div class="grid gap-6 mb-8 md:grid-cols-2">
-      <!-- Doughnut/Pie chart -->
-      <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-          Doughnut/Pie
-        </h4>
-        <canvas id="pie"></canvas>
-        <div
-          class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400"
-        >
-          <!-- Chart legend -->
-          <div class="flex items-center">
-            <span
-              class="inline-block w-3 h-3 mr-1 bg-blue-600 rounded-full"
-            ></span>
-            <span>Shirts</span>
+        {% if produk_populer or prediksi_tren or saran_admin %}
+        <div class="space-y-6">
+          <div
+            class="p-4 border-l-4 border-primary bg-blue-50 dark:bg-blue-900/20 rounded-lg"
+          >
+            <h2
+              class="text-lg font-semibold text-primary dark:text-blue-300 mb-2 flex items-center"
+            >
+              <i class="fas fa-chart-line w-5 text-center mr-2"></i>
+              <span>Prediksi Tren</span>
+            </h2>
+            <p class="text-gray-700 dark:text-gray-300 pl-7">
+              {{ prediksi_tren }}
+            </p>
           </div>
-          <div class="flex items-center">
-            <span
-              class="inline-block w-3 h-3 mr-1 bg-teal-500 rounded-full"
-            ></span>
-            <span>Shoes</span>
+
+          <div
+            class="p-4 border-l-4 border-primary bg-blue-50 dark:bg-blue-900/20 rounded-lg"
+          >
+            <h2
+              class="text-lg font-semibold text-primary dark:text-blue-300 mb-2 flex items-center"
+            >
+              <i class="fas fa-star w-5 text-center mr-2"></i>
+              <span>Produk Populer</span>
+            </h2>
+            <ul
+              class="list-disc list-inside text-gray-700 dark:text-gray-300 pl-7"
+            >
+              {% for item in produk_populer %}
+              <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
           </div>
-          <div class="flex items-center">
-            <span
-              class="inline-block w-3 h-3 mr-1 bg-primary rounded-full"
-            ></span>
-            <span>Bags</span>
-          </div>
-        </div>
-      </div>
-      <!-- Lines chart -->
-      <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-          Lines
-        </h4>
-        <canvas id="line"></canvas>
-        <div
-          class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400"
-        >
-          <!-- Chart legend -->
-          <div class="flex items-center">
-            <span
-              class="inline-block w-3 h-3 mr-1 bg-teal-500 rounded-full"
-            ></span>
-            <span>Organic</span>
-          </div>
-          <div class="flex items-center">
-            <span
-              class="inline-block w-3 h-3 mr-1 bg-primary rounded-full"
-            ></span>
-            <span>Paid</span>
+
+          <div
+            class="p-4 border-l-4 border-primary bg-blue-50 dark:bg-blue-900/20 rounded-lg"
+          >
+            <h2
+              class="text-lg font-semibold text-primary dark:text-blue-300 mb-2 flex items-center"
+            >
+              <i class="fas fa-lightbulb w-5 text-center mr-2"></i>
+              <span>Saran untuk Admin</span>
+            </h2>
+            <p class="text-gray-700 dark:text-gray-300 pl-7">
+              {{ saran_admin }}
+            </p>
           </div>
         </div>
+
+        {% else %}
+        <p class="text-gray-600 dark:text-gray-400 italic">
+          Belum ada data prediksi tersedia.
+        </p>
+        {% endif %}
       </div>
-      <!-- Bars chart -->
-      <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
-        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-          Bars
-        </h4>
-        <canvas id="bars"></canvas>
-        <div
-          class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400"
-        >
-          <!-- Chart legend -->
-          <div class="flex items-center">
-            <span
-              class="inline-block w-3 h-3 mr-1 bg-teal-500 rounded-full"
-            ></span>
-            <span>Shoes</span>
-          </div>
-          <div class="flex items-center">
-            <span
-              class="inline-block w-3 h-3 mr-1 bg-primary rounded-full"
-            ></span>
-            <span>Bags</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
+
   </div>
-</main>
-{% endblock content %}
+</div>
+
+<!-- Font Awesome for icons -->
+<script
+  src="https://kit.fontawesome.com/a076d05399.js"
+  crossorigin="anonymous"
+></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Data dari Django context
+  const productLabels = {{ product_labels|safe }};
+  const productValues = {{ product_values|safe }};
+  const cityLabels = {{ city_labels|safe }};
+  const cityValues = {{ city_values|safe }};
+  const ageLabels = {{ age_labels|safe }};
+  const ageValues = {{ age_values|safe }};
+  const genderLabels = {{ gender_labels|safe }};
+  const genderValues = {{ gender_values|safe }};
+
+  // --- Grafik Bar: Penjualan Produk ---
+  new Chart(document.getElementById('bars'), {
+    type: 'bar',
+    data: {
+      labels: productLabels,
+      datasets: [{
+        label: 'Jumlah Terjual',
+        data: productValues,
+        backgroundColor: [
+          '#6366F1', '#8B5CF6', '#EC4899',
+          '#F59E0B', '#10B981', '#3B82F6'
+        ],
+        borderWidth: 0,
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          padding: 12,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          },
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#4F46E5',
+          borderWidth: 1,
+          cornerRadius: 6,
+          displayColors: false,
+          callbacks: {
+            title: function(context) {
+              return context[0].label;
+            },
+            label: function(context) {
+              return 'Terjual: ' + context.parsed.y + ' unit';
+            },
+            afterLabel: function(context) {
+              const total = productValues.reduce((a, b) => a + b, 0);
+              const percentage = ((context.parsed.y / total) * 100).toFixed(1);
+              return 'Persentase: ' + percentage + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          },
+          ticks: {
+            callback: function(value) {
+              if (value >= 1000) {
+                return (value / 1000).toFixed(1) + 'k';
+              }
+              return value;
+            }
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            maxRotation: 45,
+            minRotation: 0
+          }
+        }
+      }
+    }
+  });
+
+  // --- Grafik Pie: Kota Penjualan iPhone ---
+  new Chart(document.getElementById('pie'), {
+    type: 'pie',
+    data: {
+      labels: cityLabels,
+      datasets: [{
+        label: 'Penjualan iPhone per Kota',
+        data: cityValues,
+        backgroundColor: [
+          '#2563EB', '#0EA5E9', '#14B8A6',
+          '#FACC15', '#F43F5E', '#475569'
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            boxWidth: 12,
+            padding: 15,
+            usePointStyle: true,
+            pointStyle: 'circle',
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          padding: 12,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          },
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#4F46E5',
+          borderWidth: 1,
+          cornerRadius: 6,
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.parsed;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return label + ': ' + value + ' unit (' + percentage + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // --- Grafik Line: Umur Pembeli iPhone ---
+  new Chart(document.getElementById('line'), {
+    type: 'line',
+    data: {
+      labels: ageLabels,
+      datasets: [{
+        label: 'Jumlah Pembeli',
+        data: ageValues,
+        borderColor: '#10B981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 3,
+        pointBackgroundColor: '#10B981',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          padding: 12,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          },
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#4F46E5',
+          borderWidth: 1,
+          cornerRadius: 6,
+          callbacks: {
+            label: function(context) {
+              return 'Jumlah Pembeli: ' + context.parsed.y;
+            },
+            afterLabel: function(context) {
+              const total = ageValues.reduce((a, b) => a + b, 0);
+              const percentage = ((context.parsed.y / total) * 100).toFixed(1);
+              return 'Kontribusi: ' + percentage + '% dari total';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          },
+          ticks: {
+            callback: function(value) {
+              if (value >= 1000) {
+                return (value / 1000).toFixed(1) + 'k';
+              }
+              return value;
+            }
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+
+  // --- Grafik Doughnut: Gender Pembeli iPhone ---
+  new Chart(document.getElementById('genderChart'), {
+    type: 'doughnut',
+    data: {
+      labels: genderLabels,
+      datasets: [{
+        data: genderValues,
+        backgroundColor: [
+          '#1D4ED8', '#E879F9', '#6366F1'  
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 12,
+            padding: 15,
+            usePointStyle: true,
+            pointStyle: 'circle',
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          padding: 12,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          },
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          borderColor: '#4F46E5',
+          borderWidth: 1,
+          cornerRadius: 6,
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.parsed;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return label + ': ' + value + ' (' + percentage + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

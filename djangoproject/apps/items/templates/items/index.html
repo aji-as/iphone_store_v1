@@ -20,20 +20,19 @@
     
     <!-- TEKS -->
     <div class="flex-1 text-center md:text-left space-y-6 animate-fade-slide z-10">
-      <h1 class="text-5xl md:text-6xl font-semibold tracking-tight text-[#04243e]">
-        iPhone 12&nbsp;Pro
+      <h1 class="text-5xl md:text-6xl font-semibold tracking-tight text-primary">
+        iPhone &nbsp;Store
       </h1>
       <p class="text-lg md:text-xl text-gray-700 max-w-md mx-auto md:mx-0">
-        Kini tersedia. Mulai dari <strong>Rp&nbsp;770.792&nbsp;/&nbsp;bulan*</strong><br>
-        dan nikmati bebas cicilan hingga 2&nbsp;bulan*.
+        Toko iPhone terpercaya dengan harga bersahabat & pelayanan premium.
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
-        <a href="#beli"
-           class="px-8 py-3 bg-[#04243e] text-white rounded-full font-semibold hover:bg-[#3674B5] transition-all duration-300 shadow-md">
+        <a href="#products"
+           class="px-8 py-3 bg-primary text-white rounded-full font-semibold hover:bg-primary/80 transition-all duration-300 shadow-md">
           Beli Sekarang
         </a>
-        <a href="#selengkapnya"
+        <a href="{% url 'items:listproduct' %}"
            class="px-8 py-3 border border-black rounded-full font-semibold hover:bg-black hover:text-white transition-all duration-300">
           Selengkapnya
         </a>
@@ -100,7 +99,7 @@
   <div class="relative overflow-hidden bg-white animate-fade-slide">
       <div class="text-center pt-10 pb-1 bg-secondary ">
         <div class="flex justify-center items-center gap-1 mb-4 ">
-          <div class="bg-primary px-2 rounded-full shadow-lg">
+          <div class="bg-primary px-2 rounded-full lg:py-3 shadow-lg">
             <i class="fas fa-star text-white text-sm lg:text-xl"></i>
           </div>
           <h1 class="text-primary text-xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
@@ -190,7 +189,7 @@
               <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
                 Produk kami
               </h2>
-              <a href="#" class=" md:inline text-sm text-blue-600 hover:underline">
+              <a href="{% url 'items:listproduct' %}" class=" md:inline text-sm text-blue-600 hover:underline">
                 Lihat lainnya &rsaquo;
               </a>
             </div>
@@ -217,7 +216,7 @@
                       <p class="text-[8px]">tersisa: {{product.stock}}</p>   
                     </div>
                   <h3 class="font-bold text-base text-gray-900 leading-tight">{{ product.name }} <span class="text-gray-500 text-[8px]">{{ product.ram }}/{{ product.memory }}</span></h3>
-                     <p class=" text md text-primary ">Rp. {{product.price}}</p>
+                    <p class=" text md text-primary ">Rp. {{product.price |floatformat:0|intcomma|default:"0"}}</p>
 
                   <!-- Tombol -->
                   <div class="flex justify-center items-center gap-3 mt-2">

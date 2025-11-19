@@ -5,7 +5,7 @@ from .models import Product
 # Create your views here.
 def index(request):
     products = Product.objects.all()
-    
+
     # Handle search functionality
     search_query = request.GET.get('search')
     if search_query:
@@ -13,6 +13,8 @@ def index(request):
             Q(name__icontains=search_query) | 
             Q(description__icontains=search_query)
         )
+        
+    print(products)
     
     return render(request, 'items/index.html', {
         'products': products,
@@ -25,7 +27,7 @@ def detailproduct(request, id_product):
         Q(name__icontains=product.name.split()[0]) | 
         Q(ram=product.ram) | 
         Q(memory=product.memory)
-    ).exclude(id_product=product.id_product)[:4]
+    ).exclude(id_product=product.id_product)[:8]
     
     context = {
         'product': product,
@@ -33,3 +35,21 @@ def detailproduct(request, id_product):
     }
     return render(request, 'items/detail_product.html', context)
    
+   
+def daftarproduct(request):
+    products = Product.objects.all()  # semua data dulu
+     # inisialisasi default
+    search_query = ''
+    if request.method == 'POST':
+        search_query = request.POST.get('search', '').strip()
+        if search_query:
+            products = products.filter(
+                Q(name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+
+    return render(request, 'items/daftar_produk.html', {
+        'products': products,
+        'search_query': search_query,
+    })
+        

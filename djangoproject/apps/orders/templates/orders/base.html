@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 {% load static %}
 {% load humanize %}
@@ -300,7 +299,7 @@
               <a href="/" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all font-medium">
                   <i class="fas fa-home w-5 text-center mr-3"></i>Beranda
               </a>
-              <a href="/items/" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all font-medium">
+              <a href="{% url 'items:listproduct' %}" class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all font-medium">
                   <i class="fas fa-box-open w-5 text-center mr-3"></i>Produk
               </a>
           </nav>
@@ -329,20 +328,20 @@
 
         <!-- Menu Desktop -->
         <div class="hidden md:flex items-center space-x-6">
-          <a href="/" class="hover:text-gray-300 transition font-medium">Beranda</a>
-          <a href="/items/" class="hover:text-gray-300 transition font-medium">Produk</a>
+          <a href="{% url 'items:listproduct' %}" class="hover:text-gray-300 transition font-medium">Beranda</a>
+          <a href="{% url 'items:listproduct' %}" class="hover:text-gray-300 transition font-medium">Produk</a>
         </div>
       </div>
     </div>
   </nav>
 
  <!-- Main Content -->
- <main class="max-w-7xl mx-auto px-4 py-8">
+ <main class="max-w-7xl mx-auto ">
    {% block content %}{% endblock content %}
  </main>
 
   <!-- Footer -->
-  <footer class="bg-primary text-primary py-10 mt-12">
+  <footer class="bg-primary text-secondary py-10 mt-12">
     <div class="max-w-7xl mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>

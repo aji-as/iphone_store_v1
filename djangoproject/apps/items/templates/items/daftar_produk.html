@@ -1,0 +1,71 @@
+{% extends 'items\base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<section id="products" class="py-12 bg-gradient-to-t from-slate-100 via-slate-100 to-secondary h-full ">
+  <div class="max-w-full mx-auto px-4">
+    <!-- Grid container -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-4 ">
+      {% for product in products %}
+      <div class="bg-slate-100 rounded-2xl transition-all duration-300  animate-fade-slide ">
+
+        <!-- Gambar Produk -->
+        <div class="relative bg-slate-100 rounded-2xl overflow-hidden h-52 md:h-60 transition-transform duration-700 ease-in-out hover:scale-101">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}"
+            class="w-full h-full object-cover ">
+        {% else %}
+        <div class="flex items-center justify-center w-full h-full bg-gray-200">
+            <i class="fas fa-mobile-alt text-5xl text-gray-400"></i>
+        </div>
+        {% endif %}
+        </div>
+
+
+
+        <!-- Konten -->
+        <div class="md:p-2 text-center md:mt-3">
+          <div class="text-gray-500 flex justify-around px-8 py-1">
+            <p class="text-[10px] text-primary font-semibold mb-1">{{product.color}}</p>
+            <p class="text-[8px]">tersisa: {{product.stock}}</p>   
+          </div>
+          <h3 class="font-bold text-base text-gray-900 leading-tight">
+            {{ product.name }} <span class="text-gray-500 text-[8px]">{{ product.ram }}/{{ product.memory }}</span>
+          </h3>
+          <p class="text-md text-primary">Rp. {{product.price |floatformat:0|intcomma|default:"0" }}</p>
+
+         <!-- Tombol -->
+          <div class="flex justify-center items-center gap-2 mt-2">
+            <a href="{% url 'items:detailproduct' product.id_product %}" 
+                class="bg-[#0071e3] hover:bg-[#005bb5] text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold shadow-md transition-all">
+                Selengkapnya
+            </a>
+            {% if product.stock > 0 %}
+            <form action="{% url 'orders:index' product.id_product %}" method="post">
+                {% csrf_token %}
+                <button class="text-[#0071e3] hover:underline font-medium text-[10px] sm:text-xs">
+                Beli &rsaquo;
+                </button>
+            </form>
+            {% else %}
+            <p class="text-gray-500 font-medium text-[10px] sm:text-xs">Beli &rsaquo;</p>
+            {% endif %}
+            </div>
+          </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+@keyframes fade-slide {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-slide {
+  animation: fade-slide 0.7s ease forwards;
+}
+</style>
+{% endblock content %}

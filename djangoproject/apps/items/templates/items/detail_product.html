@@ -44,7 +44,7 @@
           id="main-image"
           src="{{ product.image.url }}"
           alt="{{ product.name }}"
-          class="h-full w-full object-cover rounded-md"
+          class="h-full w-full object-cover rounded-2xl"
         />
         {% else %}
         <i class="fas fa-mobile-alt text-8xl text-gray-300"></i>
@@ -214,7 +214,7 @@
               <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
                 Produk terkait
               </h2>
-              <a href="#" class=" md:inline text-sm text-blue-600 hover:underline">
+              <a href="{% url 'items:listproduct' %}" class=" md:inline text-sm text-blue-600 hover:underline">
                 Lihat lainnya &rsaquo;
               </a>
             </div>
@@ -282,7 +282,7 @@
 
           <!-- Script animasi scroll -->
           <script>
-            const scrollContainer = document.getElementById('productScroll');
+            //const scrollContainer = document.getElementById('productScroll');
             const btnLeft = document.getElementById('scrollLeft');
             const btnRight = document.getElementById('scrollRight');
 

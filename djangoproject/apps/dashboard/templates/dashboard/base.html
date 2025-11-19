@@ -29,8 +29,6 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
       defer
     ></script>
-    <script src="{% static 'js/charts-lines.js' %}" defer></script>
-    <script src="{% static 'js/charts-pie.js' %}" defer></script>
   </head>
   <body class="font-roboto">
     <div
@@ -156,7 +154,7 @@
         x-transition:leave="transition ease-in-out duration-150"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-10 flex items-end bg-black/50 bg-opacity-50 sm:items-center sm:justify-center"
+        class="fixed inset-0 z-10 flex items-end bg-black/20 bg-opacity-50 sm:items-center lg:hidden sm:justify-center"
       ></div>
 
       <aside
@@ -313,9 +311,9 @@
               {% csrf_token %}
               <button 
                 type="submit"
-                class="inline-flex items-center gap-2 px-4 py-2 font-semibold text-white transition-all duration-200 ease-in-out transform bg-primary rounded-lg shadow-md text-sm hover:bg-primary/90 hover:-translate-y-px focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-white dark:focus:ring-offset-gray-800"
+                class="inline-flex items-center gap-2 px-4 py-2 font-semibold text-white transition-all duration-200 ease-in-out transform bg-primary rounded-full shadow-md text-sm hover:bg-primary/80 hover:-translate-y-px focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-white dark:focus:ring-offset-gray-800"
               >
-                Logout 
+                Keluar
               </button>
             </form>
 

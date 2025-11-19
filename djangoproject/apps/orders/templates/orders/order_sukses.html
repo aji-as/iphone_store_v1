@@ -1,0 +1,180 @@
+{% extends 'orders\base.html' %}
+{% load humanize %}
+{% block content %}
+<!-- order sukses -->
+      <div class="w-full max-w-2xl mx-auto py-6 px-4">
+        <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
+          <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Pesanan berhasil dibuat</h2>
+          
+          <div class="mb-6">
+            <div class="flex items-center justify-center mb-4">
+              {% if order.product.image %}
+              <img 
+                src="{{ order.product.image.url }}" 
+                alt="{{ order.product.name }}" 
+                class="h-40 w-40 object-cover rounded-xl"
+              />
+              {% else %}
+              <i class="fas fa-mobile-alt text-8xl text-gray-300"></i>
+              {% endif %}
+            </div>
+            
+            <h3 class="text-xl font-bold text-gray-900 text-center">{{ order.product.name }}</h3>
+            
+            <div class="mt-4 space-y-2">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Harga:</span>
+                <span class="font-semibold">Rp{{ order.product.price|floatformat:0|intcomma }}</span>
+              </div>
+              
+              {% if order.product.ram %}
+              <div class="flex justify-between">
+                <span class="text-gray-600">RAM:</span>
+                <span class="font-semibold">{{ order.product.ram }}</span>
+              </div>
+              {% endif %}
+              
+              {% if order.product.memory %}
+              <div class="flex justify-between">
+                <span class="text-gray-600">Memori:</span>
+                <span class="font-semibold">{{ order.product.memory }}</span>
+              </div>
+              {% endif %}
+              
+              {% if order.product.color %}
+              <div class="flex justify-between">
+                <span class="text-gray-600">Warna:</span>
+                <span class="font-semibold">{{ order.product.color }}</span>
+              </div>
+              {% endif %}
+              
+              <div class="flex justify-between">
+                <span class="text-gray-600">Juamlah:</span>
+                <span class="font-semibold {% if order.product.stock <= 5 %}text-yellow-600{% else %}text-green-600{% endif %}">
+                  {{ order.quantity }} unit
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border-t border-gray-200 pt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-gray-600">Total Pembayaran:</span>
+              <span id="total-price" class="text-xl font-bold text-green-600">Rp. {{order.total_price|floatformat:0|intcomma}}</span>
+            </div>
+            <div class="bg-gray-100 p-3 rounded-full mt-2">
+              <p class="text-center text-md font-bold">No pesanan: {{order.order_id}}</p>
+              <p class="text-center text-sm">Simpan no pesanan untuk search pesanan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- Order sukses  end -->
+
+
+
+<!-- Main Content -->
+  <main class="max-w-full  animate-fade-slide ">
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- Main Content Area -->
+      <div class="w-full  mt-2 ">
+        <!-- Produkkami -->
+        <section id="products" class="py-12 bg-slate-100">
+          <div class="max-w-full">
+            <!-- Header -->
+            <div class="flex flex-col justify-start lg:flex-row lg:justify-between  items-center mb-10 px-10">
+              <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
+                Produk kami
+              </h2>
+              <a href="{% url 'items:listproduct' %}" class=" md:inline text-sm text-blue-600 hover:underline">
+                Lihat lainnya &rsaquo;
+              </a>
+            </div>
+
+            <!-- Scroll container -->
+            <div id="productScroll" class="flex overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory scrollbar-hidden animate-fade-slide">
+              {% for product in products %}
+              <div class="snap-start min-w-[180px] sm:min-w-[180px] md:min-w-[230px] bg-slate-100 rounded-2xl  transition-all duration-300 flex-shrink-0">
+
+                <!-- Gambar Produk -->
+                <div class="relative bg-slate-100 rounded-t-2xl flex justify-center items-center overflow-hidden h-52 md:h-60">
+                  {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                        class="w-[170px] md:w-[220px] rounded-2xl object-contain transition-transform duration-700 ease-in-out hover:scale-102">
+                  {% else %}
+                    <i class="fas fa-mobile-alt text-5xl text-gray-400"></i>
+                  {% endif %}
+                </div>
+
+                <!-- Konten -->
+                <div class="p-2 text-center mt-3 ">
+                  <div class="text-gray-500 flex flex-row justify-around px-8 py-1">
+                      <p class="text-[10px] text-primary font-semibold mb-1">{{product.color}}</p>
+                      <p class="text-[8px]">tersisa: {{product.stock}}</p>   
+                    </div>
+                  <h3 class="font-bold text-base text-gray-900 leading-tight">{{ product.name }} <span class="text-gray-500 text-[8px]">{{ product.ram }}/{{ product.memory }}</span></h3>
+                    <p class=" text md text-primary ">Rp. {{product.price |floatformat:0|intcomma|default:"0"}}</p>
+
+                  <!-- Tombol -->
+                  <div class="flex justify-center items-center gap-3 mt-2">
+                    <a href="{% url 'items:detailproduct' product.id_product %}" 
+                      class="bg-[#0071e3] hover:bg-[#005bb5] text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md transition-all">
+                      Selengkapnya
+                    </a>
+                    <form action="{% url 'orders:index' product.id_product %}" method="post">
+                      {% csrf_token %}
+                      {% if product.stock > 0 %}
+                      <form action="{% url 'orders:index' product.id_product %}" method="post">
+                        <button 
+                          class="text-[#0071e3] hover:underline font-medium text-xs">
+                          Beli &rsaquo;
+                        </button>
+                      </form>
+                      {% else %}
+                      <p 
+                        class="text-gray-500 font-medium text-xs">
+                        Beli &rsaquo;
+                     </p>
+                      {% endif %}
+                    </form>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Navigasi Scroll -->
+            <div class="flex justify-center gap-3 mt-5">
+              <button id="scrollLeft" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition">
+                <i class="fas fa-chevron-left text-gray-700 text-sm"></i>
+              </button>
+              <button id="scrollRight" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition">
+                <i class="fas fa-chevron-right text-gray-700 text-sm"></i>
+              </button>
+            </div>
+          </div>
+          <script>
+            const scrollContainer = document.getElementById('productScroll');
+            const btnLeft = document.getElementById('scrollLeft');
+            const btnRight = document.getElementById('scrollRight');
+
+            btnLeft.addEventListener('click', () => {
+              scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
+            });
+            btnRight.addEventListener('click', () => {
+              scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+            });
+
+            // Geser otomatis
+            let autoScroll = setInterval(() => {
+              if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth) {
+                scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+              } else {
+                scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+              }
+           }, 4500);
+          </script>
+       </section>
+<!-- Main Content end -->
+{% endblock content%}
+
