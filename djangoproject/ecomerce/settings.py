@@ -84,14 +84,28 @@ WSGI_APPLICATION = 'ecomerce.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'ecomerce',
+#         'USER': 'root',
+#         'PASSWORD': '@123lululu',
+#         'HOST': 'localhost',
+#         'PORT': '3307',
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ecomerce',
+        'NAME': 'railway',  # database name
         'USER': 'root',
-        'PASSWORD': '@123lululu',
-        'HOST': 'localhost',
-        'PORT': '3307',
+        'PASSWORD': 'ZajPBDZrHwDiGIwqrufIpjhecJDZWXms',
+        'HOST': 'crossover.proxy.rlwy.net',
+        'PORT': '48980',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
     }
 }
 
