@@ -155,21 +155,23 @@ def deleteproduct(request,id_product):
     return redirect('dashboard:productlist')
 
 @login_required
-def editproduct(request,id_product):
+def editproduct(request, id_product):
     obj = Product.objects.get(id_product=id_product)
+
     if request.method == 'POST':
-        form = ProductForm(request.POST or None, instance = obj)
+        form = ProductForm(request.POST, request.FILES, instance=obj)  # ← WAJIB
         if form.is_valid():
             form.save()
             return redirect('dashboard:productlist')
-        
     else:
-        form = ProductForm(instance= obj)
-    context={
-        'tittle':'edit product',
+        form = ProductForm(instance=obj)
+
+    context = {
+        'title': 'edit product',
         'form': form
     }
     return render(request, 'dashboard/edit_product.html', context)
+
 
 @login_required
 def sendorder(request,order_id):

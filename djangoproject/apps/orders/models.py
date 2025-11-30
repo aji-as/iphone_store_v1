@@ -71,3 +71,4 @@ class Order(models.Model):
 
     def __str__(self):
         return f"{self.order_id} - {self.buyer_name} ({self.status})"
+

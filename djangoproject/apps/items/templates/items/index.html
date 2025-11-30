@@ -197,53 +197,62 @@
             <!-- Scroll container -->
             <div id="productScroll" class="flex overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory scrollbar-hidden animate-fade-slide">
               {% for product in products %}
-              <div class="snap-start min-w-[180px] sm:min-w-[180px] md:min-w-[230px] bg-slate-100 rounded-2xl  transition-all duration-300 flex-shrink-0">
+              <div class="snap-start min-w-[160px] sm:min-w-[180px] md:min-w-[230px] bg-slate-100 rounded-2xl 
+                          transition-all duration-300 flex-shrink-0">
 
                 <!-- Gambar Produk -->
-                <div class="relative bg-slate-100 rounded-t-2xl flex justify-center items-center overflow-hidden h-52 md:h-60">
+                <div class="relative bg-slate-100 rounded-t-2xl flex justify-center items-center h-48 sm:h-52 md:h-60">
+
                   {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
-                        class="w-[170px] md:w-[220px] rounded-2xl object-contain transition-transform duration-700 ease-in-out hover:scale-102">
+                    <div class="w-full h-full flex justify-center items-center">
+                      <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                        class="max-w-[90%] max-h-[90%] object-cover rounded-2xl 
+                              transition-transform duration-700 ease-in-out hover:scale-102">
+                    </div>
                   {% else %}
                     <i class="fas fa-mobile-alt text-5xl text-gray-400"></i>
                   {% endif %}
+
                 </div>
 
                 <!-- Konten -->
-                <div class="p-2 text-center mt-3 ">
-                  <div class="text-gray-500 flex flex-row justify-around px-8 py-1">
-                      <p class="text-[10px] text-primary font-semibold mb-1">{{product.color}}</p>
-                      <p class="text-[8px]">tersisa: {{product.stock}}</p>   
-                    </div>
-                  <h3 class="font-bold text-base text-gray-900 leading-tight">{{ product.name }} <span class="text-gray-500 text-[8px]">{{ product.ram }}/{{ product.memory }}</span></h3>
-                    <p class=" text md text-primary ">Rp. {{product.price |floatformat:0|intcomma|default:"0"}}</p>
+                <div class="p-2 text-center mt-3">
+                  <div class="text-gray-500 flex justify-around px-4 py-1 text-[10px]">
+                    <p class="text-primary font-semibold">{{ product.color }}</p>
+                    <p class="text-[9px]">tersisa: {{ product.stock }}</p>
+                  </div>
 
-                  <!-- Tombol -->
+                  <h3 class="font-bold text-sm sm:text-base text-gray-900 leading-tight">
+                    {{ product.name }}
+                    <span class="text-gray-500 text-[9px]">{{ product.ram }}/{{ product.memory }}</span>
+                  </h3>
+
+                  <p class="text-primary text-sm sm:text-base">
+                    Rp. {{ product.price|floatformat:0|intcomma|default:"0" }}
+                  </p>
+
                   <div class="flex justify-center items-center gap-3 mt-2">
                     <a href="{% url 'items:detailproduct' product.id_product %}" 
-                      class="bg-[#0071e3] hover:bg-[#005bb5] text-white px-4 py-2 rounded-full text-xs font-semibold shadow-md transition-all">
+                      class="bg-[#0071e3] hover:bg-[#005bb5] text-white px-4 py-2 rounded-full 
+                            text-xs font-semibold shadow-md transition-all">
                       Selengkapnya
                     </a>
+
                     <form action="{% url 'orders:index' product.id_product %}" method="post">
                       {% csrf_token %}
                       {% if product.stock > 0 %}
-                      <form action="{% url 'orders:index' product.id_product %}" method="post">
-                        <button 
-                          class="text-[#0071e3] hover:underline font-medium text-xs">
+                        <button class="text-[#0071e3] hover:underline font-medium text-xs">
                           Beli &rsaquo;
                         </button>
-                      </form>
                       {% else %}
-                      <p 
-                        class="text-gray-500 font-medium text-xs">
-                        Beli &rsaquo;
-                     </p>
+                        <p class="text-gray-500 font-medium text-xs">Beli &rsaquo;</p>
                       {% endif %}
                     </form>
                   </div>
                 </div>
               </div>
               {% endfor %}
+
             </div>
 
             <!-- Navigasi Scroll -->
